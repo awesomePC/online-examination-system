@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <a href="{% url 'exam_create' %}" class="btn btn-primary">Create Exam</a>
+    <hr>
+    <h2 class="font-weight-bold">Active Exams</h2>
+    {% if active_exams %}
+        {% for exam in active_exams %}
+            {% include "core/exam_card.html" %}
+        {% endfor %}
+    {% else %}
+        <h3 class="text-secondary font-weight-bold">No Exams Active.</h3>
+    {% endif %}
+    <hr>
+
+    <h2 class="font-weight-bold">InActive Exams</h2>
+    {% if inactive_exams %}
+        {% for exam in inactive_exams %}
+            {% include "core/exam_card.html" %}
+        {% endfor %}
+    {% else %}
+        <h3 class="text-secondary font-weight-bold">No Exams InActive.</h3>
+    {% endif %}
+{% endblock content %}

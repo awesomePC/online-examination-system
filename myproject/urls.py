@@ -15,7 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from core import views as core_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', core_views.exams_list, name='exams_list'),
+    path('exam-create/', core_views.exam_create, name='exam_create'),
+    path('exam/<int:pk>/', core_views.exam_detail, name='exam_detail'),
+    path('exam/<int:exam_pk>/mcq-create/', core_views.mcq_create, name='mcq_create'),
+    path('exam-edit/<int:pk>/', core_views.exam_edit, name='exam_edit'),
+    path('mcq-edit/<int:pk>/', core_views.mcq_edit, name='mcq_edit'),
+    path('exam-delete/<int:pk>/', core_views.exam_delete, name='exam_delete'),
+    path('mcq-delete/<int:pk>/', core_views.mcq_delete, name='mcq_delete'),
 ]

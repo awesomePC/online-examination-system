@@ -1,0 +1,14 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <h3 class="card-title">{{ exam.name }}</h3>
+        {% if exam.active %}
+            <a href="#" class="btn btn-success px-3">Start</a>
+        {% endif %}
+        {% if exam.user == user %}
+            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-primary px-3">View</a>
+        {% endif %}
+    </div>
+    <div class="card-footer">
+        {{ exam.mcq_set.all.count }} Question{{ exam.mcq_set.all.count|pluralize }}
+    </div>
+</div>

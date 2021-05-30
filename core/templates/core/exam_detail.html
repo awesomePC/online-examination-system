@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1 class="font-weight-bold">{{ exam.name }}</h1>
+    <hr>
+    <a href="{% url 'exam_edit' exam.pk %}" class="btn btn-primary mb-4">Edit Exam</a>
+    <a href="{% url 'mcq_create' exam.pk %}" class="btn btn-primary mb-4">Add MCQ</a>
+    {% if exam.mcq_set.all %}
+        {% for mcq in exam.mcq_set.all %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">{{ mcq.question }}</h4>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item"><b>A)</b> {{ mcq.option_A }}</li>
+                        <li class="list-group-item"><b>B)</b> {{ mcq.option_B }}</li>
+                        <li class="list-group-item"><b>C)</b> {{ mcq.option_C }}</li>
+                        <li class="list-group-item"><b>D)</b> {{ mcq.option_D }}</li>
+                    </ul>
+                    <a href="{% url 'mcq_edit' mcq.pk %}">Edit MCQ</a>
+                </div>
+                <div class="card-footer">
+                    <p class="card-text">Correct: {{ mcq.answer }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2 class="text-secondary font-weight-bold">No MCQ added yet.</h2>
+    {% endif %}
+{% endblock content %}
