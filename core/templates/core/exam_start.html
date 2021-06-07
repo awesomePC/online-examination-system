@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <!-- Alert -->
+    <div id="alert-template" class="d-none">
+        <div class="alert alert-dismissible fade show" role="alert">
+            <span class="alert-message"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+    <div id="alert-container"></div>
+
+    <!-- Heading -->
+    <h1 class="font-weight-bold">{{ exam.name }}</h1>
+    <p class="text-secondary">
+        {{ exam.question_set.all.count }} Question{{ exam.question_set.all.count|pluralize }} total
+    </p>
+
+    <!-- Buttons -->
+    <button id="btn-all-ques" data-href="{% url 'question_list' exam.pk %}" class="btn btn-outline-info px-3 mb-1" data-toggle="modal" data-target="#modal-q-list">
+        All questions
+    </button>
+    <br>
+
+    <button id="first" data-href="?question=1" class="btn btn-outline-primary px-3 mb-1">
+        First
+    </button>
+    <button id="prev" class="btn btn-outline-primary px-3 mb-1">Previous</button>
+    <button id="next" class="btn btn-outline-primary px-3 mb-1">Next</button>
+    <button id="last" data-href="?question={{ num_questions }}" class="btn btn-outline-primary px-3 mb-1">
+        Last
+    </button>
+    <br>
+
+    <form id="bookmark-form" method="POST" action="{% url 'bookmark' exam.pk %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="q_num">
+        <button type="submit" class="btn btn-outline-warning px-3 mt-2">Bookmark</button>
+    </form>
+    <form id="clear-form" method="POST" action="{% url 'answer_clear' exam.pk %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="q_num">
+        <button id="clear-btn" type="submit" class="btn btn-outline-danger px-3 mt-2">
+            Clear
+        </button>
+    </form>
+    <form id="submit-form" method="POST" action="{% url 'exam_submit' exam.pk %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-success px-3 mt-2">SUBMIT EXAM</button>
+    </form>
+    <hr>
+
+    <!-- Question form -->
+    <form id="question-form" method="POST" action="{% url 'answer_submit' exam.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="q_num">
+        <h3 class="mb-4 font-weight-bold">
+            <span id="question-num"></span>. 
+            <span id="question"></span>
+        </h3>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" id="option_A" value="A">
+            <label class="form-check-label" for="option_A"></label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" id="option_B" value="B">
+            <label class="form-check-label" for="option_B"></label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" id="option_C" value="C">
+            <label class="form-check-label" for="option_C"></label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" id="option_D" value="D">
+            <label class="form-check-label" for="option_D"></label>
+        </div>
+    </form>
+
+    <!-- All questions modal -->
+    <div id="modal-q-list" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">All Questions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="template-btn-question" class="d-none">
+                        <button class="list-group-item list-group-item-action q-links"></button>
+                    </div>
+                    <div id="question-list" class="list-group"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'core/js/exam_start.js' %}"></script>
+{% endblock content %}

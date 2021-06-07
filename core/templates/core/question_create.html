@@ -6,16 +6,12 @@
             <form method="POST">
                 {% csrf_token %}
                 <fieldset class="form-group">
-                    <legend class="border-bottom mb-4 pb-2">Edit MCQ</legend>
+                    <legend class="border-bottom mb-4 pb-2">Create Question</legend>
                     {{ form|crispy }}
                 </fieldset>
                 <div class="form-group">
-                    <button class="btn btn-primary btn-block" type="submit">Save</button>
+                    <button class="btn btn-primary btn-block" type="submit">Create</button>
                 </div>
-            </form>
-            <form method="POST" action="{% url 'mcq_delete' mcq.pk %}">
-                {% csrf_token %}
-                <button class="btn btn-danger btn-block" type="submit">Delete MCQ</button>
             </form>
         </div>
     </div>
