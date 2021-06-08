@@ -1,7 +1,11 @@
 {% extends "base.html" %}
+{% load my_extras %}
 {% block content %}
-    <a href="{% url 'exam_create' %}" class="btn btn-primary">Create Exam</a>
-    <hr>
+    {% if user.is_superuser or user|has_group:'teacher' %}
+        <a href="{% url 'exam_create' %}" class="btn btn-primary">Create Exam</a>
+        <hr>
+    {% endif %}
+    
     <h2 class="font-weight-bold">Active Exams</h2>
 
     {% for exam in active_exams %}

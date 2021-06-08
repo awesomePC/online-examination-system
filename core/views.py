@@ -6,6 +6,7 @@ from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from .forms import ExamForm, QuestionForm
 from .models import Exam, Question, Answer, Session
+from .decorators import group_required
 
 def exams_list(request):
     active_exams = Exam.objects.filter(active=True)
@@ -18,7 +19,8 @@ def exams_list(request):
 
     return render(request, 'core/exams_list.html', context)
 
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def exam_create(request):
     if request.method == 'POST':
         form = ExamForm(request.POST)
@@ -37,7 +39,8 @@ def exam_create(request):
 
     return render(request, 'core/exam_create.html', {'form': form})
 
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def exam_detail(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
@@ -45,7 +48,8 @@ def exam_detail(request, pk):
 
     return render(request, 'core/exam_detail.html', {'exam': exam})
 
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
@@ -72,7 +76,8 @@ def exam_edit(request, pk):
     return render(request, 'core/exam_edit.html', context)
 
 @require_POST
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def exam_delete(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
@@ -83,7 +88,8 @@ def exam_delete(request, pk):
 
     return redirect('exams_list')
 
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def question_create(request, exam_pk):
     exam = get_object_or_404(Exam, pk=exam_pk)
     if exam.user != request.user:
@@ -106,7 +112,8 @@ def question_create(request, exam_pk):
 
     return render(request, 'core/question_create.html', {'form': form})
 
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def question_edit(request, pk):
     question = get_object_or_404(Question, pk=pk)
     if question.exam.user != request.user:
@@ -133,7 +140,8 @@ def question_edit(request, pk):
     return render(request, 'core/question_edit.html', context)
 
 @require_POST
-@login_required
+@login_required(login_url='staff_login')
+@group_required('teacher')
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
     if question.exam.user != request.user:
@@ -145,7 +153,7 @@ def question_delete(request, pk):
 
     return redirect('exam_detail', pk=exam_pk)
 
-@login_required
+@group_required('student')
 def exam_start(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     session = get_object_or_404(
@@ -194,7 +202,7 @@ def exam_start(request, pk):
     return render(request, 'core/exam_start.html', context)
 
 @require_POST
-@login_required
+@group_required('student')
 def exam_participate(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
 
@@ -216,7 +224,7 @@ def exam_participate(request, pk):
     return redirect('exam_start', pk=pk)
 
 @require_POST
-@login_required
+@group_required('student')
 def exam_submit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     session = get_object_or_404(Session, exam=exam, completed=False)
@@ -229,7 +237,7 @@ def exam_submit(request, pk):
     return redirect('exams_list')
 
 @require_POST
-@login_required
+@group_required('student')
 def answer_clear(request, exam_pk):
     exam = get_object_or_404(Exam, pk=exam_pk)
     session = get_object_or_404(
@@ -252,7 +260,7 @@ def answer_clear(request, exam_pk):
     })
 
 @require_POST
-@login_required
+@group_required('student')
 def answer_submit(request, exam_pk):
     exam = get_object_or_404(Exam, pk=exam_pk)
     session = get_object_or_404(
@@ -284,7 +292,7 @@ def answer_submit(request, exam_pk):
         'message': 'Answer <b>saved</b> successfully.'
     })
 
-@login_required
+@group_required('student')
 def question_list(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     session = get_object_or_404(
@@ -317,7 +325,7 @@ def question_list(request, pk):
     })
 
 @require_POST
-@login_required
+@group_required('student')
 def bookmark(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     session = get_object_or_404(
