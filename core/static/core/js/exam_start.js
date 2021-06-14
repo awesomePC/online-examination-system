@@ -1,36 +1,45 @@
 jQuery_3_6_0(document).ready(function(){
 
-    let $question = jQuery_3_6_0('#question');
-    let $question_num = jQuery_3_6_0('#question-num');
-    let $input_q_num = jQuery_3_6_0('input[name=q_num]');
-    let $label_option_A = jQuery_3_6_0('label[for=option_A]');
-    let $label_option_B = jQuery_3_6_0('label[for=option_B]');
-    let $label_option_C = jQuery_3_6_0('label[for=option_C]');
-    let $label_option_D = jQuery_3_6_0('label[for=option_D]');
+    const $question = jQuery_3_6_0('#question');
+    const $question_num = jQuery_3_6_0('#question-num');
+    const $input_q_num = jQuery_3_6_0('input[name=q_num]');
+    const $label_option_A = jQuery_3_6_0('label[for=option_A]');
+    const $label_option_B = jQuery_3_6_0('label[for=option_B]');
+    const $label_option_C = jQuery_3_6_0('label[for=option_C]');
+    const $label_option_D = jQuery_3_6_0('label[for=option_D]');
 
-    let $question_form = jQuery_3_6_0('#question-form');
-    let $bookmark_form = jQuery_3_6_0('#bookmark-form')
-    let $clear_form = jQuery_3_6_0('#clear-form');
-    let $clear_btn = jQuery_3_6_0('#clear-btn');
+    const $question_form = jQuery_3_6_0('#question-form');
+    const $bookmark_form = jQuery_3_6_0('#bookmark-form')
+    const $clear_form = jQuery_3_6_0('#clear-form');
+    const $clear_btn = jQuery_3_6_0('#clear-btn');
 
-    let $prev = jQuery_3_6_0('#prev');
-    let $next = jQuery_3_6_0('#next');
+    const $prev = jQuery_3_6_0('#prev');
+    const $next = jQuery_3_6_0('#next');
 
-    let $alert = jQuery_3_6_0('#alert-template .alert');
-    let $alert_container = jQuery_3_6_0('#alert-container');
+    const $alert = jQuery_3_6_0('#alert-template .alert');
+    const $alert_container = jQuery_3_6_0('#alert-container');
 
-    let $btn_all_ques = jQuery_3_6_0('#btn-all-ques');
-    let $question_list = jQuery_3_6_0('#question-list');
-    let $tmpl_btn_que = jQuery_3_6_0('#template-btn-question button');
+    const $btn_all_ques = jQuery_3_6_0('#btn-all-ques');
+    const $question_list = jQuery_3_6_0('#question-list');
+    const $tmpl_btn_que = jQuery_3_6_0('#template-btn-question button');
+
+    function linebreaksbr(element, text){
+        element.empty()
+        const lines = text.split('\n');
+        lines.forEach(line => {
+            element.append(document.createTextNode(line));
+            element.append('<br>');
+        });
+    }
 
     function update_question(data){
-        $question.text(data.question);
+        linebreaksbr($question, data.question);
         $question_num.text(data.q_num);
         $input_q_num.attr('value', data.q_num);
-        $label_option_A.text(data.option_A);
-        $label_option_B.text(data.option_B);
-        $label_option_C.text(data.option_C);
-        $label_option_D.text(data.option_D);
+        $label_option_A.text('A) ' + data.option_A);
+        $label_option_B.text('B) ' + data.option_B);
+        $label_option_C.text('C) ' + data.option_C);
+        $label_option_D.text('D) ' + data.option_D);
         if (data.answer){
             jQuery_3_6_0(`input[name="answer"][value="${data.answer}"]`)
             .prop('checked', true);
@@ -59,7 +68,7 @@ jQuery_3_6_0(document).ready(function(){
     }
 
     function alert_message(color, message){
-        let alert = $alert.clone().addClass('alert-' + color);
+        const alert = $alert.clone().addClass('alert-' + color);
         alert.find('.alert-message').html(message);
         alert.prependTo($alert_container);
     }
@@ -163,7 +172,7 @@ jQuery_3_6_0(document).ready(function(){
                 $question_list.empty();
                 data.questions.forEach((que, i) => {
                     q_num = i+1
-                    let link_question = $tmpl_btn_que
+                    const link_question = $tmpl_btn_que
                     .clone(true)
                     .text(q_num + '. ' + que.answer)
                     .attr('data-href', '?question='+q_num);

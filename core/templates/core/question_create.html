@@ -9,10 +9,9 @@
                     <legend class="border-bottom mb-4 pb-2">Create Question</legend>
                     {{ form|crispy }}
                 </fieldset>
-                <div class="form-group">
-                    <button class="btn btn-primary btn-block" type="submit">Create</button>
-                </div>
+                <button class="btn btn-primary btn-block mb-2" type="submit">Create</button>
             </form>
+            <a href="{% url 'exam_detail' exam_pk %}" class="btn btn-secondary btn-block">Cancel</a>
         </div>
     </div>
 {% endblock content %}

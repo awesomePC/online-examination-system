@@ -19,7 +19,7 @@
     </p>
 
     <!-- Buttons -->
-    <button id="btn-all-ques" data-href="{% url 'question_list' exam.pk %}" class="btn btn-outline-info px-3 mb-1" data-toggle="modal" data-target="#modal-q-list">
+    <button id="btn-all-ques" data-href="{% url 'question_list' %}" class="btn btn-outline-info px-3 mb-1" data-toggle="modal" data-target="#modal-q-list">
         All questions
     </button>
     <br>
@@ -34,26 +34,26 @@
     </button>
     <br>
 
-    <form id="bookmark-form" method="POST" action="{% url 'bookmark' exam.pk %}" class="d-inline">
+    <form id="bookmark-form" method="POST" action="{% url 'bookmark' %}" class="d-inline">
         {% csrf_token %}
         <input type="hidden" name="q_num">
         <button type="submit" class="btn btn-outline-warning px-3 mt-2">Bookmark</button>
     </form>
-    <form id="clear-form" method="POST" action="{% url 'answer_clear' exam.pk %}" class="d-inline">
+    <form id="clear-form" method="POST" action="{% url 'answer_clear' %}" class="d-inline">
         {% csrf_token %}
         <input type="hidden" name="q_num">
         <button id="clear-btn" type="submit" class="btn btn-outline-danger px-3 mt-2">
             Clear
         </button>
     </form>
-    <form id="submit-form" method="POST" action="{% url 'exam_submit' exam.pk %}" class="d-inline">
+    <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline">
         {% csrf_token %}
         <button type="submit" class="btn btn-outline-success px-3 mt-2">SUBMIT EXAM</button>
     </form>
     <hr>
 
     <!-- Question form -->
-    <form id="question-form" method="POST" action="{% url 'answer_submit' exam.pk %}">
+    <form id="question-form" method="POST" action="{% url 'answer_submit' %}">
         {% csrf_token %}
         <input type="hidden" name="q_num">
         <h3 class="mb-4 font-weight-bold">

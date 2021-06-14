@@ -1,27 +1,49 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
     <h1 class="font-weight-bold">{{ exam.name }}</h1>
     <hr>
-    <a href="{% url 'exam_edit' exam.pk %}" class="btn btn-primary mb-4">Edit Exam</a>
-    <a href="{% url 'question_create' exam.pk %}" class="btn btn-primary mb-4">Add Question</a>
+    <a href="{% url 'exams_list' %}" class="btn btn-secondary mb-1">Back</a>
+    <a href="{% url 'exam_edit' exam.pk %}" class="btn btn-primary mb-1">Edit Exam</a>
+    <a href="{% url 'question_create' exam.pk %}" class="btn btn-primary mb-1">Add Question</a>
 
-    {% for question in exam.question_set.all %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <h4 class="card-title">{{ forloop.counter }}. {{ question.question }}</h4>
-                <ul class="list-group mb-4">
-                    <li class="list-group-item"><b>A)</b> {{ question.option_A }}</li>
-                    <li class="list-group-item"><b>B)</b> {{ question.option_B }}</li>
-                    <li class="list-group-item"><b>C)</b> {{ question.option_C }}</li>
-                    <li class="list-group-item"><b>D)</b> {{ question.option_D }}</li>
-                </ul>
-                <a href="{% url 'question_edit' question.pk %}">Edit question</a>
-            </div>
-            <div class="card-footer">
-                <p class="card-text">Correct: {{ question.correct_answer }}</p>
-            </div>
+    <div class="form-group mt-4">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <p class="text-secondary">
+        {{ exam.question_set.all|length }} Entr{{ exam.question_set.all|length|pluralize:"y,ies" }} total
+    </p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Question</th>
+                    <th scope="col">Option A</th>
+                    <th scope="col">Option B</th>
+                    <th scope="col">Option C</th>
+                    <th scope="col">Option D</th>
+                    <th scope="col">Correct option</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for question in exam.question_set.all %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ question }}</td>
+                        <td>{{ question.option_A }}</td>
+                        <td>{{ question.option_B }}</td>
+                        <td>{{ question.option_C }}</td>
+                        <td>{{ question.option_D }}</td>
+                        <td>{{ question.correct_answer }}</td>
+                        <td><a href="{% url 'question_edit' question.pk %}" class="btn btn-primary px-3">Edit</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
         </div>
-    {% empty %}
-        <h2 class="text-secondary font-weight-bold">No question added yet.</h2>
-    {% endfor %}
+
+        <script src="{% static 'js/search_table.js' %}"></script>
 {% endblock content %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h2 class="font-weight-bold">Users</h2>
+    <hr>
+
+    <div class="form-group">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form|crispy }}
+            <button class="btn btn-primary px-3 mr-3 d-inline" type="submit">Go</button>
+            <span class="text-secondary">
+                <span id="select-counter">0</span> 
+                of {{ users|length }} selected</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Groups</th>
+                        <th scope="col">Active</th>
+                    </tr>
+                </thead>
+                <tbody id="search-table">
+                    {% for user in users %}
+                        <tr>
+                            <th scope="row">
+                                <input type="checkbox" name="users" value="{{ user.pk }}" class="checkbox">
+                            </th>
+                            <td>{{ user }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% for group in user.groups.all %}
+                                    {{ group }},
+                                {% endfor %}
+                            </td>
+                            <td>{{ user.is_active }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+    <script src="{% static 'js/search_table.js' %}"></script>
+    <script src="{% static 'js/count_selected_checkbox.js' %}"></script>
+{% endblock content %}

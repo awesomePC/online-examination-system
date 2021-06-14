@@ -15,8 +15,10 @@ ANSWER_CHOICES = [
 
 class Exam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
-    active = models.BooleanField()
+    name = models.CharField(max_length=200, unique=True)
+    active = models.BooleanField(
+        help_text='UNCHECKING WILL SUBMIT ALL ONGOING SESSIONS OF THIS EXAM.'
+    )
 
     def __str__(self):
         return self.name

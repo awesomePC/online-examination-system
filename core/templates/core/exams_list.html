@@ -1,25 +1,42 @@
 {% extends "base.html" %}
-{% load my_extras %}
+{% load static %}
 {% block content %}
-    {% if user.is_superuser or user|has_group:'teacher' %}
-        <a href="{% url 'exam_create' %}" class="btn btn-primary">Create Exam</a>
-        <hr>
-    {% endif %}
     
-    <h2 class="font-weight-bold">Active Exams</h2>
-
-    {% for exam in active_exams %}
-        {% include "core/exam_card.html" %}
-    {% empty %}
-        <h3 class="text-secondary font-weight-bold">No Exams Active.</h3>
-    {% endfor %}
+    <h2 class="font-weight-bold">Your Exams</h2>
     <hr>
+    <a href="{% url 'exam_create' %}" class="btn btn-primary px-3 mb-3">Create Exam</a>
 
-    <h2 class="font-weight-bold">InActive Exams</h2>
+    <div class="form-group">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <p class="text-secondary">
+        {{ exams|length }} Entr{{ exams|length|pluralize:"y,ies" }} total
+    </p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Exam</th>
+                    <th scope="col">Questions</th>
+                    <th scope="col">Active</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for exam in exams %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ exam }}</td>
+                        <td>{{ exam.question_set.all.count }}</td>
+                        <td>{{ exam.active }}</td>
+                        <td><a href="{% url 'exam_detail' exam.pk %}" class="btn btn-primary px-3">View</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    {% for exam in inactive_exams %}
-        {% include "core/exam_card.html" %}
-    {% empty %}
-        <h3 class="text-secondary font-weight-bold">No Exams InActive.</h3>
-    {% endfor %}
+    <script src="{% static 'js/search_table.js' %}"></script>
 {% endblock content %}

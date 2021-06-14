@@ -18,3 +18,6 @@ class QuestionForm(forms.ModelForm):
             'option_C',
             'option_D',
         ]
+        widgets = {
+            'question': forms.Textarea(attrs={'rows': 5})
+        }

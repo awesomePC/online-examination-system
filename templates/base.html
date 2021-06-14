@@ -18,24 +18,7 @@
         </title>
     </head>
     <body>
-        <nav class="navbar navbar-expand-md bg-primary navbar-dark sticky-top">
-            <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand font-weight-bold" href="#">Exam Platform</a>
-
-            <!-- Toggler Button -->
-            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-links">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Navbar Links -->
-            <div class="collapse navbar-collapse" id="navbar-links">
-                <ul class="navbar-nav  ml-auto">
-                    {% block navbar_nav %}{% endblock navbar_nav %}
-                </ul>
-            </div>
-            </div>
-        </nav>
+        {% include "navbar.html" %}
 
         <div class="container mt-4 mb-4">
         {% if messages%}

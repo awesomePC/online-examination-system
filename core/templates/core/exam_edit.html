@@ -9,14 +9,13 @@
                     <legend class="border-bottom mb-4 pb-2">Edit Exam</legend>
                     {{ form|crispy }}
                 </fieldset>
-                <div class="form-group">
-                    <button class="btn btn-primary btn-block" type="submit">Save</button>
-                </div>
+                <button class="btn btn-primary btn-block mb-2" type="submit">Save</button>
             </form>
-            <form method="POST" action="{% url 'exam_delete' exam.pk %}">
+            <form method="POST" action="{% url 'exam_delete' exam_pk %}">
                 {% csrf_token %}
-                <button class="btn btn-danger btn-block" type="submit">Delete Exam</button>
+                <button class="btn btn-danger btn-block mb-2" type="submit">Delete Exam</button>
             </form>
+            <a href="{% url 'exam_detail' exam_pk %}" class="btn btn-secondary btn-block">Cancel</a>
         </div>
     </div>
 {% endblock content %}

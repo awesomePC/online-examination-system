@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
@@ -8,19 +9,14 @@ from .forms import ExamForm, QuestionForm
 from .models import Exam, Question, Answer, Session
 from .decorators import group_required
 
+@login_required(login_url='staff_login')
+@group_required('admin', 'teacher')
 def exams_list(request):
-    active_exams = Exam.objects.filter(active=True)
-    inactive_exams = Exam.objects.filter(active=False)
-
-    context = {
-        'active_exams': active_exams,
-        'inactive_exams': inactive_exams
-    }
-
-    return render(request, 'core/exams_list.html', context)
+    exams = Exam.objects.filter(user=request.user)
+    return render(request, 'core/exams_list.html', {'exams': exams})
 
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def exam_create(request):
     if request.method == 'POST':
         form = ExamForm(request.POST)
@@ -40,7 +36,7 @@ def exam_create(request):
     return render(request, 'core/exam_create.html', {'form': form})
 
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def exam_detail(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
@@ -49,7 +45,7 @@ def exam_detail(request, pk):
     return render(request, 'core/exam_detail.html', {'exam': exam})
 
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
@@ -57,8 +53,15 @@ def exam_edit(request, pk):
 
     if request.method == 'POST':
         form = ExamForm(request.POST, instance=exam)
+        active = exam.active
 
         if form.is_valid():
+            # submit all ongoing sessions of this exam 
+            # after deactivating it
+            if active and not form.cleaned_data.get('active'):
+                (Session.objects.filter(exam=exam, completed=False)
+                .update(completed=True))
+
             form.save()
 
             messages.success(request, 
@@ -70,14 +73,14 @@ def exam_edit(request, pk):
 
     context = {
         'form': form,
-        'exam': exam
+        'exam_pk': exam.pk
     }
 
     return render(request, 'core/exam_edit.html', context)
 
 @require_POST
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def exam_delete(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
@@ -89,7 +92,7 @@ def exam_delete(request, pk):
     return redirect('exams_list')
 
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def question_create(request, exam_pk):
     exam = get_object_or_404(Exam, pk=exam_pk)
     if exam.user != request.user:
@@ -110,10 +113,15 @@ def question_create(request, exam_pk):
     else:
         form = QuestionForm()
 
-    return render(request, 'core/question_create.html', {'form': form})
+    context = {
+        'form': form,
+        'exam_pk': exam_pk
+    }
+
+    return render(request, 'core/question_create.html', context)
 
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def question_edit(request, pk):
     question = get_object_or_404(Question, pk=pk)
     if question.exam.user != request.user:
@@ -134,14 +142,15 @@ def question_edit(request, pk):
 
     context = {
         'form': form,
-        'question': question
+        'question_pk': question.pk,
+        'exam_pk': question.exam.pk
     }
 
     return render(request, 'core/question_edit.html', context)
 
 @require_POST
 @login_required(login_url='staff_login')
-@group_required('teacher')
+@group_required('admin', 'teacher')
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
     if question.exam.user != request.user:
@@ -154,14 +163,13 @@ def question_delete(request, pk):
     return redirect('exam_detail', pk=exam_pk)
 
 @group_required('student')
-def exam_start(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
+def exam_start(request):
     session = get_object_or_404(
         Session,
         user=request.user,
-        exam=exam,
         completed=False
     )
+    exam = session.exam
     questions = exam.question_set.all()
 
     if len(questions) == 0:
@@ -203,49 +211,31 @@ def exam_start(request, pk):
 
 @require_POST
 @group_required('student')
-def exam_participate(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
-
-    # if (request
-    #         .user
-    #         .session_set
-    #         .filter(exam=exam, completed=True)
-    #         .exists()):
-    #     return 'redirect to result page'
-
-    # ongoing exam check
-    if not (request
-            .user
-            .session_set
-            .filter(exam=exam, completed=False)
-            .exists()):
-        Session.objects.create(user=request.user, exam=exam, completed=False)
-
-    return redirect('exam_start', pk=pk)
-
-@require_POST
-@group_required('student')
-def exam_submit(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
-    session = get_object_or_404(Session, exam=exam, completed=False)
+def exam_submit(request):
+    session = get_object_or_404(
+        Session,
+        user=request.user,
+        completed=False
+    )
+    exam = session.exam
 
     session.completed = True
     session.save()
 
+    logout(request)
     messages.success(request, f'Exam "{exam.name}" submited successfully')
 
-    return redirect('exams_list')
+    return redirect('student_login')
 
 @require_POST
 @group_required('student')
-def answer_clear(request, exam_pk):
-    exam = get_object_or_404(Exam, pk=exam_pk)
+def answer_clear(request):
     session = get_object_or_404(
         Session,
         user=request.user,
-        exam=exam,
         completed=False
     )
+    exam = session.exam
     questions = exam.question_set.all()
 
     q_num = int(request.POST.get('q_num'))
@@ -261,14 +251,13 @@ def answer_clear(request, exam_pk):
 
 @require_POST
 @group_required('student')
-def answer_submit(request, exam_pk):
-    exam = get_object_or_404(Exam, pk=exam_pk)
+def answer_submit(request):
     session = get_object_or_404(
         Session,
         user=request.user,
-        exam=exam,
         completed=False
     )
+    exam = session.exam
     questions = exam.question_set.all()
 
     q_num = int(request.POST.get('q_num'))
@@ -293,14 +282,13 @@ def answer_submit(request, exam_pk):
     })
 
 @group_required('student')
-def question_list(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
+def question_list(request):
     session = get_object_or_404(
         Session,
         user=request.user,
-        exam=exam,
         completed=False
     )
+    exam = session.exam
 
     questions = []
     for question in exam.question_set.all():
@@ -326,14 +314,13 @@ def question_list(request, pk):
 
 @require_POST
 @group_required('student')
-def bookmark(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
+def bookmark(request):
     session = get_object_or_404(
         Session,
         user=request.user,
-        exam=exam,
         completed=False
     )
+    exam = session.exam
     questions = exam.question_set.all()
 
     q_num = int(request.POST.get('q_num'))

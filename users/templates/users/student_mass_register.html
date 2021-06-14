@@ -3,15 +3,16 @@
 {% block content %}
     <div class="card">
         <div class="card-body">
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <fieldset class="form-group">
-                    <legend class="border-bottom mb-4 pb-2">Create Exam</legend>
+                    <legend class="border-bottom mb-4 pb-2">Student Mass Register</legend>
                     {{ form|crispy }}
                 </fieldset>
-                <button class="btn btn-primary btn-block mb-2" type="submit">Create</button>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block" type="submit">Create account(s)</button>
+                </div>
             </form>
-            <a href="{% url 'exams_list' %}" class="btn btn-secondary btn-block">Cancel</a>
         </div>
     </div>
 {% endblock content %}
