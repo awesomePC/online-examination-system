@@ -1,5 +1,6 @@
-from io import TextIOWrapper
 from csv import DictReader
+from io import TextIOWrapper
+import random
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
@@ -17,13 +18,13 @@ from .forms import *
 def staff_register(request):
     if request.method == 'POST':
         form = StaffRegisterForm(request.POST)
-
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, 
                 f'Account created for {username}. They can now login.')
-            messages.info(request, 'Contact an admin to confirm your account.')
+            messages.info(request, 
+                'Contact an admin to confirm your account.')
 
             return redirect('staff_login')
     else:
@@ -31,23 +32,13 @@ def staff_register(request):
 
     return render(request, 'users/staff_register.html', {'form': form})
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin')
 def student_mass_register(request):
     if request.method == 'POST':
         form = StudentRegisterForm(request.POST, request.FILES)
-
         if form.is_valid():
             file = form.cleaned_data.get('file')
-
-            if not file.name.endswith('.csv'):
-                messages.error(request, 'File is not CSV type.')
-                return redirect('student_mass_register')
-
-            if file.multiple_chunks():
-                messages.error(request, 'File is too large (> 2.5 MB).')
-                return redirect('student_mass_register')
-
             file = TextIOWrapper(file, encoding='utf-8')
             dict_reader = DictReader(file)
 
@@ -56,14 +47,11 @@ def student_mass_register(request):
             for row in dict_reader:
                 user, created = User.objects.update_or_create(
                     username=row['student id'],
-                    defaults={
-                        'email': row['email']
-                    }
+                    defaults={'email': row['email']}
                 )
 
                 if created:
                     create_counter += 1
-
                     group = Group.objects.get(name='student')
                     user.groups.add(group)
 
@@ -98,7 +86,6 @@ def student_mass_register(request):
 def staff_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
-
         if form.is_valid():
             user = form.get_user()
             groups = ('admin', 'teacher')
@@ -144,7 +131,6 @@ def student_login(request):
             exam = e_form.cleaned_data.get('exam')
             try:
                 session = user.session_set.get(completed=False)
-
                 if session.exam != exam:
                     messages.error(request,
                         'Only one exam can be given at a time. '
@@ -153,7 +139,12 @@ def student_login(request):
                     return redirect('student_login')
 
             except ObjectDoesNotExist:
-                Session.objects.create(user=user, exam=exam, completed=False)
+                Session.objects.create(
+                    user=user,
+                    exam=exam,
+                    seed=random.randrange(10000),
+                    completed=False
+                )
 
             login(request, user)
 
@@ -167,15 +158,13 @@ def student_login(request):
         'l_form': l_form,
         'e_form': e_form,
     }
-
     return render(request, 'users/student_login.html', context)
 
-@login_required(login_url='staff_login')
+@login_required
 @group_forbidden('student')
 def profile(request):
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=request.user)
-
         if form.is_valid():
             form.save()
 
@@ -187,12 +176,11 @@ def profile(request):
 
     return render(request, 'users/profile.html', {'form': form})
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin')
 def users_list(request):
     if request.method == 'POST':
         form = ActionForm(request.POST)
-
         if form.is_valid():
             queryset = User.objects.filter(
                 pk__in=request.POST.getlist('users')
@@ -208,5 +196,4 @@ def users_list(request):
         'form': form,
         'users': User.objects.all()
     }
-
     return render(request, 'users/users_list.html', context)

@@ -12,7 +12,7 @@
         <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
     </div>
     <p class="text-secondary">
-        {{ exam.question_set.all|length }} Entr{{ exam.question_set.all|length|pluralize:"y,ies" }} total
+        {{ questions|length }} Entr{{ questions|length|pluralize:"y,ies" }} total
     </p>
     <div class="table-responsive">
         <table class="table table-bordered table-sm">
@@ -29,7 +29,7 @@
                 </tr>
             </thead>
             <tbody id="search-table">
-                {% for question in exam.question_set.all %}
+                {% for question in questions %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ question }}</td>
@@ -42,8 +42,8 @@
                     </tr>
                 {% endfor %}
             </tbody>
-            </table>
-        </div>
+        </table>
+    </div>
 
-        <script src="{% static 'js/search_table.js' %}"></script>
+    <script src="{% static 'js/search_table.js' %}"></script>
 {% endblock content %}

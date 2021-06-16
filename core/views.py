@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -9,13 +10,13 @@ from .forms import ExamForm, QuestionForm
 from .models import Exam, Question, Answer, Session
 from .decorators import group_required
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def exams_list(request):
     exams = Exam.objects.filter(user=request.user)
     return render(request, 'core/exams_list.html', {'exams': exams})
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def exam_create(request):
     if request.method == 'POST':
@@ -35,16 +36,20 @@ def exam_create(request):
 
     return render(request, 'core/exam_create.html', {'form': form})
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def exam_detail(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     if exam.user != request.user:
         raise PermissionDenied()
 
-    return render(request, 'core/exam_detail.html', {'exam': exam})
+    context = {
+        'exam': exam,
+        'questions': exam.question_set.filter(deleted=False)
+    }
+    return render(request, 'core/exam_detail.html', context)
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
@@ -75,11 +80,10 @@ def exam_edit(request, pk):
         'form': form,
         'exam_pk': exam.pk
     }
-
     return render(request, 'core/exam_edit.html', context)
 
 @require_POST
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def exam_delete(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
@@ -91,7 +95,7 @@ def exam_delete(request, pk):
 
     return redirect('exams_list')
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def question_create(request, exam_pk):
     exam = get_object_or_404(Exam, pk=exam_pk)
@@ -117,10 +121,9 @@ def question_create(request, exam_pk):
         'form': form,
         'exam_pk': exam_pk
     }
-
     return render(request, 'core/question_create.html', context)
 
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def question_edit(request, pk):
     question = get_object_or_404(Question, pk=pk)
@@ -145,22 +148,25 @@ def question_edit(request, pk):
         'question_pk': question.pk,
         'exam_pk': question.exam.pk
     }
-
     return render(request, 'core/question_edit.html', context)
 
 @require_POST
-@login_required(login_url='staff_login')
+@login_required
 @group_required('admin', 'teacher')
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
     if question.exam.user != request.user:
         raise PermissionDenied()
 
-    exam_pk = question.exam.pk
-    question.delete()
-    messages.success(request, 'Question deleted successfully')
+    exam = question.exam
+    if Session.objects.filter(exam=exam, created__gt=question.created).exists():
+        question.deleted = True
+        question.save()
+    else:
+        question.delete()
 
-    return redirect('exam_detail', pk=exam_pk)
+    messages.success(request, 'Question deleted successfully')
+    return redirect('exam_detail', pk=exam.pk)
 
 @group_required('student')
 def exam_start(request):
@@ -170,14 +176,13 @@ def exam_start(request):
         completed=False
     )
     exam = session.exam
-    questions = exam.question_set.all()
+    questions = session.get_questions()
 
     if len(questions) == 0:
         raise Http404()
 
     # send question on ajax
     if request.is_ajax():
-        
         q_num = int(request.GET.get('question'))
         question = questions[q_num-1]
 
@@ -206,7 +211,6 @@ def exam_start(request):
         'exam': exam,
         'num_questions': len(questions),
     }
-
     return render(request, 'core/exam_start.html', context)
 
 @require_POST
@@ -236,13 +240,12 @@ def answer_clear(request):
         completed=False
     )
     exam = session.exam
-    questions = exam.question_set.all()
+    questions = session.get_questions()
 
     q_num = int(request.POST.get('q_num'))
     question = questions[q_num-1]
 
-    answer = Answer.objects.get(session=session, question=question)
-    answer.delete()
+    Answer.objects.get(session=session, question=question).delete()
 
     return JsonResponse({
         'status': 'ok',
@@ -258,23 +261,17 @@ def answer_submit(request):
         completed=False
     )
     exam = session.exam
-    questions = exam.question_set.all()
+    questions = session.get_questions()
 
     q_num = int(request.POST.get('q_num'))
     ans = request.POST.get('answer')
     question = questions[q_num-1]
 
-    try:
-        answer = Answer.objects.get(session=session, question=question)
-        answer.answer = ans
-        answer.save()
-
-    except ObjectDoesNotExist:
-        answer = Answer.objects.create(
-            session=session,
-            question=question,
-            answer=ans
-        )
+    Answer.objects.update_or_create(
+        session=session,
+        question=question,
+        defaults={'answer': ans}
+    )
 
     return JsonResponse({
         'status': 'ok',
@@ -289,9 +286,10 @@ def question_list(request):
         completed=False
     )
     exam = session.exam
+    questions = session.get_questions()
 
-    questions = []
-    for question in exam.question_set.all():
+    data = []
+    for question in questions:
         try:
             answer = Answer.objects.get(session=session, question=question)
             answer = answer.answer
@@ -303,13 +301,13 @@ def question_list(request):
         else:
             bookmark = False
 
-        questions.append({
+        data.append({
             'answer': answer,
             'bookmark': bookmark
         })
 
     return JsonResponse({
-        'questions': questions
+        'questions': data
     })
 
 @require_POST
@@ -321,7 +319,7 @@ def bookmark(request):
         completed=False
     )
     exam = session.exam
-    questions = exam.question_set.all()
+    questions = session.get_questions()
 
     q_num = int(request.POST.get('q_num'))
     question = questions[q_num-1]

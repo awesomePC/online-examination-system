@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import (
     UserCreationForm,
@@ -36,17 +37,26 @@ class StaffRegisterForm(UserCreationForm):
 
 class StudentRegisterForm(forms.Form):
     file = forms.FileField(
-        label='CSV File',
+        label='CSV file with "student id" & "email" columns',
         help_text=(
             '<ul>'
             '<li>Size must be less than 2.5 MB.</li>'
             '<li>Must be a csv file.</li>'
-            '<li>Must have "student id" & "email" columns.</li>'
             '</ul>'
             'PLEASE DOUBLE CHECK THE FILE BEFORE PROCEDING, '
             'THE FILE WILL BE ASSUMED TO HAVE NO ERRORS.'
         )
     )
+
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        if not file.name.endswith('.csv'):
+            raise ValidationError('File is not CSV type.')
+
+        if file.multiple_chunks():
+            raise ValidationError('File is too large (> 2.5 MB).')
+
+        return file
 
 
 class StudentLoginForm(AuthenticationForm):

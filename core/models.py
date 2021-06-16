@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -25,6 +26,7 @@ class Exam(models.Model):
 
 
 class Question(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     question = models.TextField(max_length=1000)
     option_A = models.CharField(max_length=200)
@@ -36,17 +38,32 @@ class Question(models.Model):
         choices=ANSWER_CHOICES,
         default=A
     )
+    deleted = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['created']
 
     def __str__(self):
         return self.question
 
 
 class Session(models.Model):
-    '''User\'s exam session'''
+    """User's exam session"""
+    created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    completed = models.BooleanField()
+    seed = models.PositiveIntegerField()
+    completed = models.BooleanField(default=False)
     bookmarks = models.ManyToManyField(Question)
+
+    def get_questions(self):
+        questions = list(
+            self.exam.question_set.filter(created__lt=self.created)
+        )
+        rand = random.Random(self.seed)
+        rand.shuffle(questions)
+
+        return questions
 
     def __str__(self):
         return self.exam.name

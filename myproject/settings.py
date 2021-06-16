@@ -137,6 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+LOGIN_URL = 'staff_login'
+
 MESSAGE_TAGS = {
     messages.DEBUG: 'secondary',
     messages.ERROR: 'danger',
