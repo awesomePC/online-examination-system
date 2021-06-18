@@ -1,17 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    
-    <h2 class="font-weight-bold">Your Exams</h2>
+    <h1 class="font-weight-bold">{{ username }} results</h1>
     <hr>
-    <a href="{% url 'exam_create' %}" class="btn btn-primary px-3 mb-3">Create Exam</a>
 
-    <div class="form-group">
+    <div class="form-group mt-4">
         <label for="search-input">Search</label>
         <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
     </div>
     <p class="text-secondary">
-        {{ exams|length }} Entr{{ exams|length|pluralize:"y,ies" }} total
+        {{ sessions|length }} Entr{{ sessions|length|pluralize:"y,ies" }} total
     </p>
     <div class="table-responsive">
         <table class="table table-bordered table-sm">
@@ -19,22 +17,19 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Exam</th>
-                    <th scope="col">Questions</th>
-                    <th scope="col">Active</th>
-                    <th scope="col"></th>
+                    <th scope="col">Correct Answers</th>
+                    <th scope="col">Attempted Questions</th>
+                    <th scope="col">Total Questions</th>
                 </tr>
             </thead>
             <tbody id="search-table">
-                {% for exam in exams %}
+                {% for session in sessions %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ exam }}</td>
-                        <td>{{ exam.question_set.all.count }}</td>
-                        <td>{{ exam.active }}</td>
-                        <td>
-                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-primary px-3 mb-1">View</a>
-                            <a href="{% url 'results_list' exam.pk %}" class="btn btn-success px-3 mb-1">Result</a>
-                        </td>
+                        <td>{{ session.exam }}</td>
+                        <td>{{ session.get_num_correct_ans }}</td>
+                        <td>{{ session.get_num_attempted_que }}</td>
+                        <td>{{ session.get_num_total_que }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

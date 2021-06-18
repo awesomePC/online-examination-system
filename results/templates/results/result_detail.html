@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% load my_extras %}
+{% block content %}
+    <h1 class="font-weight-bold">{{ session.exam }} result ({{ session.user }})</h1>
+    <hr>
+    <a href="{% url 'results_list' session.exam.pk %}" class="btn btn-secondary mb-1">Back</a>
+
+    <div class="form-group mt-4">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <p class="text-secondary">
+        {{ answers|length }} Entr{{ answers|length|pluralize:"y,ies" }} total
+    </p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Question</th>
+                    <th scope="col">Student option</th>
+                    <th scope="col">Student option text</th>
+                    <th scope="col">Correct option</th>
+                    <th scope="col">Correct option text</th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for answer in answers %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ answer.question }}</td>
+                        <td>{{ answer.answer }}</td>
+                        <td>{{ answer.question|get_option_text:answer.answer }}</td>
+                        <td>{{ answer.question.correct_answer }}</td>
+                        <td>{{ answer.question|get_option_text:answer.question.correct_answer }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{% static 'js/search_table.js' %}"></script>
+{% endblock content %}

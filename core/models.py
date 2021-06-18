@@ -15,6 +15,7 @@ ANSWER_CHOICES = [
 ]
 
 class Exam(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, unique=True)
     active = models.BooleanField(
@@ -38,7 +39,7 @@ class Question(models.Model):
         choices=ANSWER_CHOICES,
         default=A
     )
-    deleted = models.BooleanField(default=False)
+    deleted = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['created']
@@ -50,6 +51,7 @@ class Question(models.Model):
 class Session(models.Model):
     """User's exam session"""
     created = models.DateTimeField(auto_now_add=True)
+    submitted = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     seed = models.PositiveIntegerField()
@@ -60,10 +62,29 @@ class Session(models.Model):
         questions = list(
             self.exam.question_set.filter(created__lt=self.created)
         )
+        questions = [
+            q for q in questions
+            if not q.deleted or q.deleted > self.created
+        ]
         rand = random.Random(self.seed)
         rand.shuffle(questions)
 
         return questions
+
+    def get_num_correct_ans(self):
+        answers = self.answer_set.all()
+        num_correct = 0
+        for answer in answers:
+            if answer.answer == answer.question.correct_answer:
+                num_correct += 1
+
+        return num_correct
+
+    def get_num_attempted_que(self):
+        return self.answer_set.all().count()
+
+    def get_num_total_que(self):
+        return len(self.get_questions())
 
     def __str__(self):
         return self.exam.name

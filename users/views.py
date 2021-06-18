@@ -194,6 +194,6 @@ def users_list(request):
 
     context = {
         'form': form,
-        'users': User.objects.all()
+        'users': User.objects.all().order_by('username')
     }
     return render(request, 'users/users_list.html', context)

@@ -1,19 +1,20 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import JsonResponse, Http404
+from django.utils import timezone
 from django.views.decorators.http import require_POST
+from .decorators import group_required
 from .forms import ExamForm, QuestionForm
 from .models import Exam, Question, Answer, Session
-from .decorators import group_required
 
 @login_required
 @group_required('admin', 'teacher')
 def exams_list(request):
-    exams = Exam.objects.filter(user=request.user)
+    exams = request.user.exam_set.all().order_by('-created')
     return render(request, 'core/exams_list.html', {'exams': exams})
 
 @login_required
@@ -45,7 +46,7 @@ def exam_detail(request, pk):
 
     context = {
         'exam': exam,
-        'questions': exam.question_set.filter(deleted=False)
+        'questions': exam.question_set.filter(deleted=None)
     }
     return render(request, 'core/exam_detail.html', context)
 
@@ -65,7 +66,7 @@ def exam_edit(request, pk):
             # after deactivating it
             if active and not form.cleaned_data.get('active'):
                 (Session.objects.filter(exam=exam, completed=False)
-                .update(completed=True))
+                .update(completed=True, submitted=timezone.now()))
 
             form.save()
 
@@ -159,8 +160,9 @@ def question_delete(request, pk):
         raise PermissionDenied()
 
     exam = question.exam
-    if Session.objects.filter(exam=exam, created__gt=question.created).exists():
-        question.deleted = True
+    if (Session.objects.filter(exam=exam, created__gt=question.created)
+            .exists()):
+        question.deleted = timezone.now()
         question.save()
     else:
         question.delete()
@@ -224,6 +226,7 @@ def exam_submit(request):
     exam = session.exam
 
     session.completed = True
+    session.submitted = timezone.now()
     session.save()
 
     logout(request)

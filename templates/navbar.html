@@ -15,8 +15,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'student_login' %}">Home</a>
                 </li>
+                {% if not user.is_authenticated or user|has_group:'student' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'result_all' %}">Results</a>
+                    </li>
+                {% endif %}
                 {% if user.is_authenticated %}
-                    {% if user|has_group:'admin' or user.is_superuser %}
+                    {% if user|has_group:'admin' %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'student_mass_register' %}">
                                 Student mass register
@@ -26,7 +31,7 @@
                             <a class="nav-link" href="{% url 'users_list' %}">Users</a>
                         </li>
                     {% endif %}
-                    {% if user|has_group:'teacher' or user|has_group:'admin' or user.is_superuser %}
+                    {% if user|has_group:'teacher' or user|has_group:'admin' %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'exams_list' %}">Exams</a>
                         </li>

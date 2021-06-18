@@ -18,6 +18,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from core import views as core_views
 from users import views as users_views
+from results import views as results_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -118,4 +119,21 @@ urlpatterns = [
         name='password_reset_complete'
     ),
     path('users-list/', users_views.users_list, name='users_list'),
+
+    # results
+    path(
+        'exam/<int:exam_pk>/results/',
+        results_views.results_list,
+        name='results_list'
+    ),
+    path(
+        'result/<int:pk>/',
+        results_views.result_detail,
+        name='result_detail'
+    ),
+    path(
+        'results/',
+        results_views.result_all,
+        name='result_all'
+    ),
 ]
