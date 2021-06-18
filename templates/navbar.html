@@ -1,0 +1,58 @@
+{% load my_extras %}
+<nav class="navbar navbar-expand-md bg-primary navbar-dark sticky-top">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand font-weight-bold" href="#">Exam Platform</a>
+
+        <!-- Toggler Button -->
+        <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-links">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbar-links">
+            <ul class="navbar-nav  ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'student_login' %}">Home</a>
+                </li>
+                {% if not user.is_authenticated or user|has_group:'student' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'result_all' %}">Results</a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    {% if user|has_group:'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'student_mass_register' %}">
+                                Student mass register
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'users_list' %}">Users</a>
+                        </li>
+                    {% endif %}
+                    {% if user|has_group:'teacher' or user|has_group:'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'exams_list' %}">Exams</a>
+                        </li>
+                    {% endif %}
+                    {% if not user|has_group:'student' or user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff_login' %}">Staff login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff_register' %}">Staff register</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

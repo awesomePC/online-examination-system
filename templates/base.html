@@ -8,30 +8,19 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            var jQuery_3_6_0 = $.noConflict(true);
+        </script>
+
         <title>
             {% block title%}Exam Platform{% endblock title%}
         </title>
     </head>
     <body>
-        <nav class="navbar navbar-expand-md bg-primary navbar-dark sticky-top">
-            <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand font-weight-bold" href="#">Exam Platform</a>
+        {% include "navbar.html" %}
 
-            <!-- Toggler Button -->
-            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-links">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Navbar Links -->
-            <div class="collapse navbar-collapse" id="navbar-links">
-                <ul class="navbar-nav  ml-auto">
-                    {% block navbar_nav %}{% endblock navbar_nav %}
-                </ul>
-            </div>
-            </div>
-        </nav>
-
+        <div class="container mt-4 mb-4">
         {% if messages%}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -44,6 +33,7 @@
         {% endif%}
 
         {% block content %}{% endblock content %}
+        </div>
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

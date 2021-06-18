@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4 pb-2">Edit Question</legend>
+                    {{ form|crispy }}
+                </fieldset>
+                <button class="btn btn-primary btn-block mb-2" type="submit">Save</button>
+            </form>
+            <form method="POST" action="{% url 'question_delete' question_pk %}">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-block mb-2" type="submit">Delete Question</button>
+            </form>
+            <a href="{% url 'exam_detail' exam_pk %}" class="btn btn-secondary btn-block">Cancel</a>
+        </div>
+    </div>
+{% endblock content %}
