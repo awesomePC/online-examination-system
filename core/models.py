@@ -1,6 +1,8 @@
 import random
-from django.db import models
+from datetime import timedelta
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import models
 
 A = 'A'
 B = 'B'
@@ -14,13 +16,24 @@ ANSWER_CHOICES = [
     (D, D),
 ]
 
+def validate_max_duration(value):
+    if value > timedelta(hours=23, minutes=59, seconds=59):
+        raise ValidationError('Maximum duration is 23 hours, 59 minutes and 59 seconds.')
+
+def validate_min_duration(value):
+    if value < timedelta(seconds=1):
+        raise ValidationError('Minimum duration is 1 second.')
+
 class Exam(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, unique=True)
-    active = models.BooleanField(
-        help_text='UNCHECKING WILL SUBMIT ALL ONGOING SESSIONS OF THIS EXAM.'
+    duration = models.DurationField(
+        default=timedelta(hours=1),
+        help_text='In format hh:mm:ss',
+        validators=[validate_max_duration, validate_min_duration]
     )
+    active = models.BooleanField()
 
     def __str__(self):
         return self.name
@@ -85,6 +98,9 @@ class Session(models.Model):
 
     def get_num_total_que(self):
         return len(self.get_questions())
+
+    def get_timeover_timestamp(self):
+        return (self.created + self.exam.duration).timestamp()
 
     def __str__(self):
         return self.exam.name

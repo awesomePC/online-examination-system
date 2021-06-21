@@ -19,6 +19,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Exam</th>
+                    <th scope="col">Duration</th>
                     <th scope="col">Questions</th>
                     <th scope="col">Active</th>
                     <th scope="col"></th>
@@ -29,6 +30,7 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ exam }}</td>
+                        <td>{{ exam.duration }}</td>
                         <td>{{ exam.question_set.all.count }}</td>
                         <td>{{ exam.active }}</td>
                         <td>

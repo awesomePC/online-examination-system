@@ -14,16 +14,18 @@
 
     <!-- Heading -->
     <h1 class="font-weight-bold">{{ exam.name }}</h1>
-    <p class="text-secondary">
+    <p class="text-secondary d-inline">
         {{ exam.question_set.all.count }} Question{{ exam.question_set.all.count|pluralize }} total
     </p>
+    <div id="timer" class="badge badge-primary d-inline ml-3 p-2" data-timestamp="{{ timestamp }}" data-duration="{{ duration }}">
+        00:00:00
+    </div>
+    <hr>
 
     <!-- Buttons -->
     <button id="btn-all-ques" data-href="{% url 'question_list' %}" class="btn btn-outline-info px-3 mb-1" data-toggle="modal" data-target="#modal-q-list">
         All questions
     </button>
-    <br>
-
     <button id="first" data-href="?question=1" class="btn btn-outline-primary px-3 mb-1">
         First
     </button>
@@ -48,7 +50,9 @@
     </form>
     <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline">
         {% csrf_token %}
-        <button type="submit" class="btn btn-outline-success px-3 mt-2">SUBMIT EXAM</button>
+        <button id="submit-btn" type="submit" class="btn btn-outline-success px-3 mt-2">
+            SUBMIT EXAM
+        </button>
     </form>
     <hr>
 
@@ -99,4 +103,5 @@
     </div>
 
     <script type="text/javascript" src="{% static 'core/js/exam_start.js' %}"></script>
+    <script type="text/javascript" src="{% static 'core/js/timer.js' %}"></script>
 {% endblock content %}

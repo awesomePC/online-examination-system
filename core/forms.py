@@ -4,7 +4,7 @@ from .models import Exam, Question
 class ExamForm(forms.ModelForm):
     class Meta:
         model = Exam
-        fields = ['name', 'active']
+        fields = ['name', 'duration', 'active']
 
 
 class QuestionForm(forms.ModelForm):

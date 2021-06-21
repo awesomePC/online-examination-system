@@ -59,15 +59,7 @@ def exam_edit(request, pk):
 
     if request.method == 'POST':
         form = ExamForm(request.POST, instance=exam)
-        active = exam.active
-
         if form.is_valid():
-            # submit all ongoing sessions of this exam 
-            # after deactivating it
-            if active and not form.cleaned_data.get('active'):
-                (Session.objects.filter(exam=exam, completed=False)
-                .update(completed=True, submitted=timezone.now()))
-
             form.save()
 
             messages.success(request, 
@@ -177,7 +169,6 @@ def exam_start(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
     questions = session.get_questions()
 
     if len(questions) == 0:
@@ -210,8 +201,10 @@ def exam_start(request):
         })
 
     context = {
-        'exam': exam,
+        'exam': session.exam,
         'num_questions': len(questions),
+        'timestamp':  session.get_timeover_timestamp() * 1000,
+        'duration': session.exam.duration.total_seconds() * 1000,
     }
     return render(request, 'core/exam_start.html', context)
 
@@ -223,14 +216,12 @@ def exam_submit(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
-
     session.completed = True
     session.submitted = timezone.now()
     session.save()
 
     logout(request)
-    messages.success(request, f'Exam "{exam.name}" submited successfully')
+    messages.success(request, f'Exam "{session.exam}" submited successfully')
 
     return redirect('student_login')
 
@@ -242,7 +233,8 @@ def answer_clear(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
+    if timezone.now().timestamp() > session.get_timeover_timestamp():
+        raise PermissionDenied()
     questions = session.get_questions()
 
     q_num = int(request.POST.get('q_num'))
@@ -263,9 +255,9 @@ def answer_submit(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
+    if timezone.now().timestamp() > session.get_timeover_timestamp():
+        raise PermissionDenied()
     questions = session.get_questions()
-
     q_num = int(request.POST.get('q_num'))
     ans = request.POST.get('answer')
     question = questions[q_num-1]
@@ -288,7 +280,6 @@ def question_list(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
     questions = session.get_questions()
 
     data = []
@@ -321,9 +312,7 @@ def bookmark(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
     questions = session.get_questions()
-
     q_num = int(request.POST.get('q_num'))
     question = questions[q_num-1]
 
