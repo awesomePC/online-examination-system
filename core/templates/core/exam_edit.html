@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="card">
+    <div class="card mx-auto max-width-650">
         <div class="card-body">
             <form method="POST">
                 {% csrf_token %}
@@ -9,7 +9,7 @@
                     <legend class="border-bottom mb-4 pb-2">Edit Exam</legend>
                     {{ form|crispy }}
                 </fieldset>
-                <button class="btn btn-primary btn-block mb-2" type="submit">Save</button>
+                <button class="btn btn-success btn-block mb-2" type="submit">Save</button>
             </form>
             <form method="POST" action="{% url 'exam_delete' exam_pk %}">
                 {% csrf_token %}

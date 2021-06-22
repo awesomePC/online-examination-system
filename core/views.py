@@ -22,7 +22,6 @@ def exams_list(request):
 def exam_create(request):
     if request.method == 'POST':
         form = ExamForm(request.POST)
-
         if form.is_valid():
             exam = form.save(commit=False)
             exam.user = request.user
@@ -97,7 +96,6 @@ def question_create(request, exam_pk):
 
     if request.method == 'POST':
         form = QuestionForm(request.POST)
-
         if form.is_valid():
             question = form.save(commit=False)
             question.exam = exam
@@ -125,7 +123,6 @@ def question_edit(request, pk):
 
     if request.method == 'POST':
         form = QuestionForm(request.POST, instance=question)
-
         if form.is_valid():
             form.save()
 
@@ -201,8 +198,7 @@ def exam_start(request):
         })
 
     context = {
-        'exam': session.exam,
-        'num_questions': len(questions),
+        'session': session,
         'timestamp':  session.get_timeover_timestamp() * 1000,
         'duration': session.exam.duration.total_seconds() * 1000,
     }
@@ -221,9 +217,8 @@ def exam_submit(request):
     session.save()
 
     logout(request)
-    messages.success(request, f'Exam "{session.exam}" submited successfully')
 
-    return redirect('student_login')
+    return render(request, 'core/submit.html', {'session': session})
 
 @require_POST
 @group_required('student')
@@ -244,7 +239,7 @@ def answer_clear(request):
 
     return JsonResponse({
         'status': 'ok',
-        'message': 'Answer <b>cleared</b> successfully.'
+        'message': 'Answer cleared.'
     })
 
 @require_POST
@@ -270,7 +265,7 @@ def answer_submit(request):
 
     return JsonResponse({
         'status': 'ok',
-        'message': 'Answer <b>saved</b> successfully.'
+        'message': f'Answer "{ans}" saved.'
     })
 
 @group_required('student')
@@ -318,10 +313,10 @@ def bookmark(request):
 
     if session.bookmarks.filter(id=question.id).exists():
         session.bookmarks.remove(question)
-        msg = 'Bookmark <b>removed</b> successfully.'
+        msg = 'Bookmark removed.'
     else:
         session.bookmarks.add(question)
-        msg = 'Bookmark <b>added</b> successfully.'
+        msg = 'Bookmark added.'
 
     return JsonResponse({
         'status': 'ok',

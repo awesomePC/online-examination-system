@@ -35,6 +35,9 @@ class Exam(models.Model):
     )
     active = models.BooleanField()
 
+    def get_num_questions(self):
+        return self.question_set.filter(deleted=None).count()
+
     def __str__(self):
         return self.name
 

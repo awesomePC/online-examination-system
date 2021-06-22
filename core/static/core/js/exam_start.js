@@ -70,7 +70,7 @@ jQuery_3_6_0(document).ready(function(){
     function alert_message(color, message){
         const alert = $alert.clone().addClass('alert-' + color);
         alert.find('.alert-message').html(message);
-        alert.prependTo($alert_container);
+        $alert_container.empty().append(alert);
     }
 
     function get_question(){

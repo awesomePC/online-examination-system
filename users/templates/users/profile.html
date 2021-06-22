@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="card">
+    <div class="card mx-auto max-width-650">
         <div class="card-body">
             <form method="POST">
                 {% csrf_token %}
@@ -10,7 +10,7 @@
                     {{ form|crispy }}
                 </fieldset>
                 <div class="form-group">
-                    <button class="btn btn-primary btn-block" type="submit">Update</button>
+                    <button class="btn btn-success btn-block" type="submit">Update</button>
                 </div>
             </form>
         </div>
