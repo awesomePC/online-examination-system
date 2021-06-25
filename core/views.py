@@ -195,6 +195,8 @@ def exam_start(request):
             'option_C': question.option_C,
             'option_D': question.option_D,
             'answer': answer,
+            'marks_on_correct_answer': question.marks_on_correct_answer,
+            'marks_on_wrong_answer': question.marks_on_wrong_answer,
         })
 
     context = {

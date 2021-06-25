@@ -33,10 +33,17 @@ class Exam(models.Model):
         help_text='In format hh:mm:ss',
         validators=[validate_max_duration, validate_min_duration]
     )
+    passing_percentage = models.FloatField(default=0)
     active = models.BooleanField()
 
     def get_num_questions(self):
         return self.question_set.filter(deleted=None).count()
+
+    def get_max_marks(self):
+        marks = 0
+        for question in self.question_set.filter(deleted=None):
+            marks += question.marks_on_correct_answer
+        return marks
 
     def __str__(self):
         return self.name
@@ -55,6 +62,8 @@ class Question(models.Model):
         choices=ANSWER_CHOICES,
         default=A
     )
+    marks_on_correct_answer = models.FloatField(default=1)
+    marks_on_wrong_answer = models.FloatField(default=0)
     deleted = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -87,15 +96,6 @@ class Session(models.Model):
 
         return questions
 
-    def get_num_correct_ans(self):
-        answers = self.answer_set.all()
-        num_correct = 0
-        for answer in answers:
-            if answer.answer == answer.question.correct_answer:
-                num_correct += 1
-
-        return num_correct
-
     def get_num_attempted_que(self):
         return self.answer_set.all().count()
 
@@ -104,6 +104,22 @@ class Session(models.Model):
 
     def get_timeover_timestamp(self):
         return (self.created + self.exam.duration).timestamp()
+
+    def get_marks(self):
+        marks = 0
+        for answer in self.answer_set.all():
+            marks += answer.get_marks()
+        return marks
+
+    def get_max_marks(self):
+        marks = 0
+        for question in self.get_questions():
+            marks += question.marks_on_correct_answer
+        return marks
+
+    def get_passing_status(self):
+        percentage = self.get_marks()/self.get_max_marks()*100
+        return percentage >= self.exam.passing_percentage
 
     def __str__(self):
         return self.exam.name
@@ -117,6 +133,14 @@ class Answer(models.Model):
         choices=ANSWER_CHOICES,
         default=A
     )
+
+    def get_answer_status(self):
+        return self.answer == self.question.correct_answer
+
+    def get_marks(self):
+        if self.get_answer_status():
+            return self.question.marks_on_correct_answer
+        return self.question.marks_on_wrong_answer
 
     def __str__(self):
         return self.answer

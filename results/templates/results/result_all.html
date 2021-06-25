@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load my_extras %}
 {% block content %}
     <h1 class="font-weight-bold">{{ username }} results</h1>
     <hr>
@@ -17,17 +18,23 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Exam</th>
-                    <th scope="col">Correct Answers</th>
+                    <th scope="col">Passing status</th>
+                    <th scope="col">Marks</th>
+                    <th scope="col">Max marks</th>
+                    <th scope="col">Passing percentage</th>
                     <th scope="col">Attempted Questions</th>
                     <th scope="col">Total Questions</th>
                 </tr>
             </thead>
             <tbody id="search-table">
                 {% for session in sessions %}
-                    <tr>
+                    <tr class="table-{{ session.get_passing_status|bool_to_colour }}">
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ session.exam }}</td>
-                        <td>{{ session.get_num_correct_ans }}</td>
+                        <td>{{ session.get_passing_status|bool_to_passing_status }}</td>
+                        <td>{{ session.get_marks }}</td>
+                        <td>{{ session.get_max_marks }}</td>
+                        <td>{{ session.exam.passing_percentage }}%</td>
                         <td>{{ session.get_num_attempted_que }}</td>
                         <td>{{ session.get_num_total_que }}</td>
                     </tr>

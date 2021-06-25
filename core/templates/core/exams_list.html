@@ -21,6 +21,8 @@
                     <th scope="col">Exam</th>
                     <th scope="col">Duration</th>
                     <th scope="col">Questions</th>
+                    <th scope="col">Max marks</th>
+                    <th scope="col">Passing percentage</th>
                     <th scope="col">Active</th>
                     <th scope="col"></th>
                 </tr>
@@ -32,6 +34,8 @@
                         <td>{{ exam }}</td>
                         <td>{{ exam.duration }}</td>
                         <td>{{ exam.get_num_questions }}</td>
+                        <td>{{ exam.get_max_marks }}</td>
+                        <td>{{ exam.passing_percentage }}%</td>
                         <td>{{ exam.active }}</td>
                         <td>
                             <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-info px-3 mb-1">View</a>

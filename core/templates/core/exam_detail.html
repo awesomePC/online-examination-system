@@ -20,6 +20,8 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Question</th>
+                    <th scope="col">Marks on correct answer</th>
+                    <th scope="col">Marks on wrong answer</th>
                     <th scope="col">Option A</th>
                     <th scope="col">Option B</th>
                     <th scope="col">Option C</th>
@@ -33,6 +35,8 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ question }}</td>
+                        <td>{{ question.marks_on_correct_answer }}</td>
+                        <td>{{ question.marks_on_wrong_answer }}</td>
                         <td>{{ question.option_A }}</td>
                         <td>{{ question.option_B }}</td>
                         <td>{{ question.option_C }}</td>

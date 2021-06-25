@@ -17,6 +17,10 @@
                     <td>{{ session.exam.duration }}</td>
                 </tr>
                 <tr>
+                    <td valign="top">Max marks:</td>
+                    <td>{{ session.exam.get_max_marks }}</td>
+                </tr>
+                <tr>
                     <td valign="top">Questions:</td>
                     <td>{{ session.get_num_total_que }}</td>
                 </tr>

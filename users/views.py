@@ -11,7 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from myproject.settings import EMAIL_HOST_USER
-from core.decorators import group_required, group_forbidden
+from core.decorators import group_required
 from core.models import Session
 from .forms import *
 
@@ -72,10 +72,12 @@ def student_mass_register(request):
                 else:
                     update_counter += 1
 
-            messages.success(request,
-                f'Successfully created {create_counter} user(s).')
-            messages.info(request,
-                f'Successfully updated {update_counter} user(s).')
+            if create_counter:
+                messages.success(request,
+                    f'Successfully created {create_counter} user(s).')
+            if update_counter:
+                messages.info(request,
+                    f'Successfully updated {update_counter} user(s).')
 
             return redirect('student_mass_register')
     else:
@@ -90,8 +92,7 @@ def staff_login(request):
             user = form.get_user()
             groups = ('admin', 'teacher')
             if not (user.groups.filter(name__in=groups).exists() or
-                    user.is_superuser or
-                    user.is_staff):
+                    user.is_superuser):
                 messages.error(request,
                     'Only confirmed staff can login.')
 
@@ -133,12 +134,16 @@ def student_login(request):
                 session = user.session_set.get(completed=False)
                 if session.exam != exam:
                     messages.error(request,
-                        'Only one exam can be given at a time. '
+                        'Only one exam can be taken at a time. '
                         f'Please complete "{session}" first.')
 
                     return redirect('student_login')
 
             except ObjectDoesNotExist:
+                if user.session_set.filter(exam=exam).exists():
+                    messages.error(request, 'An exam can only be taken once.')
+                    return redirect('student_login')
+
                 Session.objects.create(
                     user=user,
                     exam=exam,
@@ -161,7 +166,7 @@ def student_login(request):
     return render(request, 'users/student_login.html', context)
 
 @login_required
-@group_forbidden('student')
+@group_required('admin', 'teacher')
 def profile(request):
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=request.user)

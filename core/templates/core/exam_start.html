@@ -43,9 +43,15 @@
         </div>
     </div>
 
-    <div class="badge badge-info d-inline p-2">
+    <span class="badge badge-info p-2 ml-1 mb-1">
          #Question <span id="question-num"></span> of {{ session.get_num_total_que }}
-    </div>
+    </span>
+    <span class="badge badge-success p-2 ml-1 mb-1">
+        #Marks on correct answer <span id="marks-on-correct-answer"></span>
+    </span>
+    <span class="badge badge-danger p-2 ml-1 mb-1">
+        #Marks on wrong answer <span id="marks-on-wrong-answer"></span>
+    </span>
     <hr>
 
     <!-- Question form -->
