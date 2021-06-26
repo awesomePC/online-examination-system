@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card mx-auto max-width-650">
+        <div class="card-body">
+            <div class="badge badge-success py-2 mb-3">Exam Submitted</div>
+            <h2 class="card-title font-weight-bold">
+                Your exam was submitted successfully.
+            </h2>
+            <hr>
+            <table>
+                <tr>
+                    <td class="w-50" valign="top">Exam:</td>
+                    <td>{{ session.exam }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Duration:</td>
+                    <td>{{ session.exam.duration }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Max marks:</td>
+                    <td>{{ session.exam.get_max_marks }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Questions:</td>
+                    <td>{{ session.get_num_total_que }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Student ID:</td>
+                    <td>{{ session.user }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Exam state:</td>
+                    <td>completed</td>
+                </tr>
+                <tr>
+                    <td valign="top">Start time:</td>
+                    <td>{{ session.created }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">End time:</td>
+                    <td>{{ session.submitted }}</td>
+                </tr>
+            </table>
+            <hr>
+            <small class="text-muted">
+                <a href="{% url 'student_login' %}">Log In Again</a>
+            </small>
+        </div>
+    </div>
+{% endblock content %}

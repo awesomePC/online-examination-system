@@ -7,6 +7,8 @@ jQuery_3_6_0(document).ready(function(){
     const $label_option_B = jQuery_3_6_0('label[for=option_B]');
     const $label_option_C = jQuery_3_6_0('label[for=option_C]');
     const $label_option_D = jQuery_3_6_0('label[for=option_D]');
+    const $marks_on_correct_answer = jQuery_3_6_0('#marks-on-correct-answer');
+    const $marks_on_wrong_answer = jQuery_3_6_0('#marks-on-wrong-answer');
 
     const $question_form = jQuery_3_6_0('#question-form');
     const $bookmark_form = jQuery_3_6_0('#bookmark-form')
@@ -40,6 +42,8 @@ jQuery_3_6_0(document).ready(function(){
         $label_option_B.text('B) ' + data.option_B);
         $label_option_C.text('C) ' + data.option_C);
         $label_option_D.text('D) ' + data.option_D);
+        $marks_on_correct_answer.text(data.marks_on_correct_answer);
+        $marks_on_wrong_answer.text(data.marks_on_wrong_answer);
         if (data.answer){
             jQuery_3_6_0(`input[name="answer"][value="${data.answer}"]`)
             .prop('checked', true);
@@ -70,7 +74,7 @@ jQuery_3_6_0(document).ready(function(){
     function alert_message(color, message){
         const alert = $alert.clone().addClass('alert-' + color);
         alert.find('.alert-message').html(message);
-        alert.prependTo($alert_container);
+        $alert_container.empty().append(alert);
     }
 
     function get_question(){

@@ -1,5 +1,37 @@
 {% extends "base.html" %}
 {% load static %}
+{% block navbar %}
+    <style type="text/css">
+        #alert-container{
+            height: 58px;
+            overflow-y: hidden;
+        }
+        #question-form{
+            padding-bottom: 154px;
+        }
+        @media only screen and (min-width: 768px){
+            .font-20{
+                font-size: 20px;
+            }
+        }
+    </style>
+    <div class="bg-dark sticky-top py-1" >
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <p class="font-weight-bold m-0 text-light">{{ session.exam }}</p>
+                    <p class="font-weight-bold m-0 text-light">{{ user }}</p>
+                </div>
+                <div class="col-6 text-right">
+                    <h4><span id="timer" class="badge badge-primary p-2" data-timestamp="{{ timestamp }}" data-duration="{{ duration }}">00:00:00</span></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-2">
+        <div id="alert-container"></div>
+    </div>
+{% endblock navbar %}
 {% block content %}
     <!-- Alert -->
     <div id="alert-template" class="d-none">
@@ -10,56 +42,25 @@
             </button>
         </div>
     </div>
-    <div id="alert-container"></div>
 
-    <!-- Heading -->
-    <h1 class="font-weight-bold">{{ exam.name }}</h1>
-    <p class="text-secondary">
-        {{ exam.question_set.all.count }} Question{{ exam.question_set.all.count|pluralize }} total
-    </p>
-
-    <!-- Buttons -->
-    <button id="btn-all-ques" data-href="{% url 'question_list' %}" class="btn btn-outline-info px-3 mb-1" data-toggle="modal" data-target="#modal-q-list">
-        All questions
-    </button>
-    <br>
-
-    <button id="first" data-href="?question=1" class="btn btn-outline-primary px-3 mb-1">
-        First
-    </button>
-    <button id="prev" class="btn btn-outline-primary px-3 mb-1">Previous</button>
-    <button id="next" class="btn btn-outline-primary px-3 mb-1">Next</button>
-    <button id="last" data-href="?question={{ num_questions }}" class="btn btn-outline-primary px-3 mb-1">
-        Last
-    </button>
-    <br>
-
-    <form id="bookmark-form" method="POST" action="{% url 'bookmark' %}" class="d-inline">
-        {% csrf_token %}
-        <input type="hidden" name="q_num">
-        <button type="submit" class="btn btn-outline-warning px-3 mt-2">Bookmark</button>
-    </form>
-    <form id="clear-form" method="POST" action="{% url 'answer_clear' %}" class="d-inline">
-        {% csrf_token %}
-        <input type="hidden" name="q_num">
-        <button id="clear-btn" type="submit" class="btn btn-outline-danger px-3 mt-2">
-            Clear
-        </button>
-    </form>
-    <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-outline-success px-3 mt-2">SUBMIT EXAM</button>
-    </form>
+    <span class="badge badge-info p-2 ml-1 mb-1">
+         #Question <span id="question-num"></span> of {{ session.get_num_total_que }}
+    </span>
+    <span class="badge badge-success p-2 ml-1 mb-1">
+        #Marks on correct answer <span id="marks-on-correct-answer"></span>
+    </span>
+    <span class="badge badge-danger p-2 ml-1 mb-1">
+        #Marks on wrong answer <span id="marks-on-wrong-answer"></span>
+    </span>
     <hr>
 
     <!-- Question form -->
-    <form id="question-form" method="POST" action="{% url 'answer_submit' %}">
+    <form id="question-form" method="POST" action="{% url 'answer_submit' %}" class="font-20">
         {% csrf_token %}
         <input type="hidden" name="q_num">
-        <h3 class="mb-4 font-weight-bold">
-            <span id="question-num"></span>. 
+        <p class="mb-4 font-weight-bold"> 
             <span id="question"></span>
-        </h3>
+        </p>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="answer" id="option_A" value="A">
             <label class="form-check-label" for="option_A"></label>
@@ -97,6 +98,51 @@
             </div>
         </div>
     </div>
+{% endblock content %}
+{% block footer %}
+    <div class="bg-dark fixed-bottom py-2">
+        <div class="container">
+            <!-- Buttons -->
+            <div class="row">
+                <div class="col-sm-4 text-center my-1">
+                    <button id="btn-all-ques" data-href="{% url 'question_list' %}" class="btn btn-info" data-toggle="modal" data-target="#modal-q-list">
+                        Questions
+                    </button>
+                    <form id="bookmark-form" method="POST" action="{% url 'bookmark' %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="q_num">
+                        <button type="submit" class="btn btn-warning">Bookmark</button>
+                    </form>
+                </div>
+                <div class="col-sm-4 text-center my-1">
+                    <button id="first" data-href="?question=1" class="btn btn-primary">
+                        First
+                    </button>
+                    <button id="prev" class="btn btn-primary">Previous</button>
+                    <button id="next" class="btn btn-primary">Next</button>
+                    <button id="last" data-href="?question={{ session.get_num_total_que }}" class="btn btn-primary">
+                        Last
+                    </button>
+                </div>
+                <div class="col-sm-4 text-center my-1">
+                    <form id="clear-form" method="POST" action="{% url 'answer_clear' %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="q_num">
+                        <button id="clear-btn" type="submit" class="btn btn-danger">
+                            Clear
+                        </button>
+                    </form>
+                    <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button id="submit-btn" type="submit" class="btn btn-success">
+                            SUBMIT EXAM
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript" src="{% static 'core/js/exam_start.js' %}"></script>
-{% endblock content %}
+    <script type="text/javascript" src="{% static 'core/js/timer.js' %}"></script>
+{% endblock footer %}

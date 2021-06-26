@@ -13,7 +13,7 @@
         {% csrf_token %}
         <div class="form-group">
             {{ form|crispy }}
-            <button class="btn btn-primary px-3 mr-3 d-inline" type="submit">Go</button>
+            <button class="btn btn-success px-3 mr-3 d-inline" type="submit">Go</button>
             <span class="text-secondary">
                 <span id="select-counter">0</span> 
                 of {{ users|length }} selected</span>

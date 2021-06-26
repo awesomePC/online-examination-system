@@ -4,7 +4,7 @@ from .models import Exam, Question
 class ExamForm(forms.ModelForm):
     class Meta:
         model = Exam
-        fields = ['name', 'active']
+        fields = ['name', 'duration', 'passing_percentage', 'active']
 
 
 class QuestionForm(forms.ModelForm):
@@ -17,6 +17,8 @@ class QuestionForm(forms.ModelForm):
             'option_B',
             'option_C',
             'option_D',
+            'marks_on_correct_answer',
+            'marks_on_wrong_answer',
         ]
         widgets = {
             'question': forms.Textarea(attrs={'rows': 5})

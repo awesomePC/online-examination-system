@@ -1,5 +1,5 @@
 {% load my_extras %}
-<nav class="navbar navbar-expand-md bg-primary navbar-dark sticky-top">
+<nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top mb-4">
     <div class="container">
         <!-- Brand -->
         <a class="navbar-brand font-weight-bold" href="#">Exam Platform</a>
@@ -35,8 +35,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'exams_list' %}">Exams</a>
                         </li>
-                    {% endif %}
-                    {% if not user|has_group:'student' or user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                         </li>

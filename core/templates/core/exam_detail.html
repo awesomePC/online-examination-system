@@ -4,8 +4,8 @@
     <h1 class="font-weight-bold">{{ exam.name }}</h1>
     <hr>
     <a href="{% url 'exams_list' %}" class="btn btn-secondary mb-1">Back</a>
-    <a href="{% url 'exam_edit' exam.pk %}" class="btn btn-primary mb-1">Edit Exam</a>
-    <a href="{% url 'question_create' exam.pk %}" class="btn btn-primary mb-1">Add Question</a>
+    <a href="{% url 'exam_edit' exam.pk %}" class="btn btn-info mb-1">Edit Exam</a>
+    <a href="{% url 'question_create' exam.pk %}" class="btn btn-success mb-1">Add Question</a>
 
     <div class="form-group mt-4">
         <label for="search-input">Search</label>
@@ -20,6 +20,8 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Question</th>
+                    <th scope="col">Marks on correct answer</th>
+                    <th scope="col">Marks on wrong answer</th>
                     <th scope="col">Option A</th>
                     <th scope="col">Option B</th>
                     <th scope="col">Option C</th>
@@ -33,12 +35,14 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ question }}</td>
+                        <td>{{ question.marks_on_correct_answer }}</td>
+                        <td>{{ question.marks_on_wrong_answer }}</td>
                         <td>{{ question.option_A }}</td>
                         <td>{{ question.option_B }}</td>
                         <td>{{ question.option_C }}</td>
                         <td>{{ question.option_D }}</td>
                         <td>{{ question.correct_answer }}</td>
-                        <td><a href="{% url 'question_edit' question.pk %}" class="btn btn-primary px-3">Edit</a></td>
+                        <td><a href="{% url 'question_edit' question.pk %}" class="btn btn-success px-3">Edit</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

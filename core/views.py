@@ -22,7 +22,6 @@ def exams_list(request):
 def exam_create(request):
     if request.method == 'POST':
         form = ExamForm(request.POST)
-
         if form.is_valid():
             exam = form.save(commit=False)
             exam.user = request.user
@@ -59,15 +58,7 @@ def exam_edit(request, pk):
 
     if request.method == 'POST':
         form = ExamForm(request.POST, instance=exam)
-        active = exam.active
-
         if form.is_valid():
-            # submit all ongoing sessions of this exam 
-            # after deactivating it
-            if active and not form.cleaned_data.get('active'):
-                (Session.objects.filter(exam=exam, completed=False)
-                .update(completed=True, submitted=timezone.now()))
-
             form.save()
 
             messages.success(request, 
@@ -105,7 +96,6 @@ def question_create(request, exam_pk):
 
     if request.method == 'POST':
         form = QuestionForm(request.POST)
-
         if form.is_valid():
             question = form.save(commit=False)
             question.exam = exam
@@ -133,7 +123,6 @@ def question_edit(request, pk):
 
     if request.method == 'POST':
         form = QuestionForm(request.POST, instance=question)
-
         if form.is_valid():
             form.save()
 
@@ -177,7 +166,6 @@ def exam_start(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
     questions = session.get_questions()
 
     if len(questions) == 0:
@@ -207,11 +195,14 @@ def exam_start(request):
             'option_C': question.option_C,
             'option_D': question.option_D,
             'answer': answer,
+            'marks_on_correct_answer': question.marks_on_correct_answer,
+            'marks_on_wrong_answer': question.marks_on_wrong_answer,
         })
 
     context = {
-        'exam': exam,
-        'num_questions': len(questions),
+        'session': session,
+        'timestamp':  session.get_timeover_timestamp() * 1000,
+        'duration': session.exam.duration.total_seconds() * 1000,
     }
     return render(request, 'core/exam_start.html', context)
 
@@ -223,16 +214,13 @@ def exam_submit(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
-
     session.completed = True
     session.submitted = timezone.now()
     session.save()
 
     logout(request)
-    messages.success(request, f'Exam "{exam.name}" submited successfully')
 
-    return redirect('student_login')
+    return render(request, 'core/submit.html', {'session': session})
 
 @require_POST
 @group_required('student')
@@ -242,7 +230,8 @@ def answer_clear(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
+    if timezone.now().timestamp() > session.get_timeover_timestamp():
+        raise PermissionDenied()
     questions = session.get_questions()
 
     q_num = int(request.POST.get('q_num'))
@@ -252,7 +241,7 @@ def answer_clear(request):
 
     return JsonResponse({
         'status': 'ok',
-        'message': 'Answer <b>cleared</b> successfully.'
+        'message': 'Answer cleared.'
     })
 
 @require_POST
@@ -263,9 +252,9 @@ def answer_submit(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
+    if timezone.now().timestamp() > session.get_timeover_timestamp():
+        raise PermissionDenied()
     questions = session.get_questions()
-
     q_num = int(request.POST.get('q_num'))
     ans = request.POST.get('answer')
     question = questions[q_num-1]
@@ -278,7 +267,7 @@ def answer_submit(request):
 
     return JsonResponse({
         'status': 'ok',
-        'message': 'Answer <b>saved</b> successfully.'
+        'message': f'Answer "{ans}" saved.'
     })
 
 @group_required('student')
@@ -288,7 +277,6 @@ def question_list(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
     questions = session.get_questions()
 
     data = []
@@ -321,18 +309,16 @@ def bookmark(request):
         user=request.user,
         completed=False
     )
-    exam = session.exam
     questions = session.get_questions()
-
     q_num = int(request.POST.get('q_num'))
     question = questions[q_num-1]
 
     if session.bookmarks.filter(id=question.id).exists():
         session.bookmarks.remove(question)
-        msg = 'Bookmark <b>removed</b> successfully.'
+        msg = 'Bookmark removed.'
     else:
         session.bookmarks.add(question)
-        msg = 'Bookmark <b>added</b> successfully.'
+        msg = 'Bookmark added.'
 
     return JsonResponse({
         'status': 'ok',

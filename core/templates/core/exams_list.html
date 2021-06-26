@@ -4,7 +4,7 @@
     
     <h2 class="font-weight-bold">Your Exams</h2>
     <hr>
-    <a href="{% url 'exam_create' %}" class="btn btn-primary px-3 mb-3">Create Exam</a>
+    <a href="{% url 'exam_create' %}" class="btn btn-success px-3 mb-3">Create Exam</a>
 
     <div class="form-group">
         <label for="search-input">Search</label>
@@ -19,7 +19,10 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Exam</th>
+                    <th scope="col">Duration</th>
                     <th scope="col">Questions</th>
+                    <th scope="col">Max marks</th>
+                    <th scope="col">Passing percentage</th>
                     <th scope="col">Active</th>
                     <th scope="col"></th>
                 </tr>
@@ -29,10 +32,13 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ exam }}</td>
-                        <td>{{ exam.question_set.all.count }}</td>
+                        <td>{{ exam.duration }}</td>
+                        <td>{{ exam.get_num_questions }}</td>
+                        <td>{{ exam.get_max_marks }}</td>
+                        <td>{{ exam.passing_percentage }}%</td>
                         <td>{{ exam.active }}</td>
                         <td>
-                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-primary px-3 mb-1">View</a>
+                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-info px-3 mb-1">View</a>
                             <a href="{% url 'results_list' exam.pk %}" class="btn btn-success px-3 mb-1">Result</a>
                         </td>
                     </tr>
