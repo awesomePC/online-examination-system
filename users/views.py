@@ -8,6 +8,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Group
+from django.http import Http404
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from myproject.settings import EMAIL_HOST_USER
@@ -144,6 +145,9 @@ def student_login(request):
                 if user.session_set.filter(exam=exam).exists():
                     messages.error(request, 'An exam can only be taken once.')
                     return redirect('student_login')
+
+                if not exam.question_set.filter(deleted=None).exists():
+                    raise Http404()
 
                 Session.objects.create(
                     user=user,
