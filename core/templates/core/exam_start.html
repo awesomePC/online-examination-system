@@ -1,20 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'core/css/exam_start.css' %}">
+{% endblock head %}
 {% block navbar %}
-    <style type="text/css">
-        #alert-container{
-            height: 58px;
-            overflow-y: hidden;
-        }
-        #question-form{
-            padding-bottom: 154px;
-        }
-        @media only screen and (min-width: 768px){
-            .font-20{
-                font-size: 20px;
-            }
-        }
-    </style>
     <div class="bg-dark sticky-top py-1" >
         <div class="container">
             <div class="row">
@@ -132,7 +121,7 @@
                             Clear
                         </button>
                     </form>
-                    <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline">
+                    <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline confirm-form-submit" data-confirm-msg="This action can't be undone.&#10;are you sure to continue?">
                         {% csrf_token %}
                         <button id="submit-btn" type="submit" class="btn btn-success">
                             SUBMIT EXAM
@@ -145,4 +134,5 @@
 
     <script type="text/javascript" src="{% static 'core/js/exam_start.js' %}"></script>
     <script type="text/javascript" src="{% static 'core/js/timer.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/confirm_form_submit.js' %}"></script>
 {% endblock footer %}

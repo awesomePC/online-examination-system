@@ -1,8 +1,11 @@
 import random
 from datetime import timedelta
-from django.contrib.auth.models import User
+from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+
+User = get_user_model()
 
 A = 'A'
 B = 'B'
@@ -36,9 +39,11 @@ class Exam(models.Model):
     passing_percentage = models.FloatField(default=0)
     active = models.BooleanField()
 
+    @admin.display(description='no. of questions')
     def get_num_questions(self):
         return self.question_set.filter(deleted=None).count()
 
+    @admin.display(description='max marks')
     def get_max_marks(self):
         marks = 0
         for question in self.question_set.filter(deleted=None):
@@ -96,27 +101,32 @@ class Session(models.Model):
 
         return questions
 
+    @admin.display(description='no. of attempted questions')
     def get_num_attempted_que(self):
         return self.answer_set.all().count()
 
+    @admin.display(description='no. of questions')
     def get_num_total_que(self):
         return len(self.get_questions())
 
     def get_timeover_timestamp(self):
         return (self.created + self.exam.duration).timestamp()
 
+    @admin.display(description='marks')
     def get_marks(self):
         marks = 0
         for answer in self.answer_set.all():
             marks += answer.get_marks()
         return marks
 
+    @admin.display(description='max marks')
     def get_max_marks(self):
         marks = 0
         for question in self.get_questions():
             marks += question.marks_on_correct_answer
         return marks
 
+    @admin.display(description='pass', boolean=True)
     def get_passing_status(self):
         percentage = self.get_marks()/self.get_max_marks()*100
         return percentage >= self.exam.passing_percentage

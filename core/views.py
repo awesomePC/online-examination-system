@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from .decorators import group_required
@@ -167,9 +167,6 @@ def exam_start(request):
         completed=False
     )
     questions = session.get_questions()
-
-    if len(questions) == 0:
-        raise Http404()
 
     # send question on ajax
     if request.is_ajax():

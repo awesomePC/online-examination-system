@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'results.apps.ResultsConfig',
 ]
 
+AUTH_USER_MODEL = 'users.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
