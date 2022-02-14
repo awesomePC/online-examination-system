@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top mb-4">
     <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand font-weight-bold" href="#">EXAM APP</a>
+        <a class="navbar-brand font-weight-bold" href="#">Online Examination System</a>
 
         <!-- Toggler Button -->
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-links">
@@ -13,7 +13,7 @@
         <div class="collapse navbar-collapse" id="navbar-links">
             <ul class="navbar-nav  ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'student_login' %}">Home</a>
+                    <a class="nav-link" href="#">Home</a>
                 </li>
                 {% if not user.is_authenticated or user|has_group:'student' %}
                     <li class="nav-item">
@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                     {% if user|has_group:'admin' %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'student_mass_register' %}">
+                            <a class="nav-link" href="#">
                                 Student mass register
                             </a>
                         </li>
@@ -44,10 +44,10 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff_login' %}">Staff login</a>
+                        <a class="nav-link" href="#">Staff login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff_register' %}">Staff register</a>
+                        <a class="nav-link" href="#">Staff register</a>
                     </li>
                 {% endif %}
             </ul>

@@ -21,119 +21,76 @@ from users import views as users_views
 from results import views as results_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
+    path("admin/", admin.site.urls),
     # core
-    path('exams-list/', core_views.exams_list, name='exams_list'),
-    path('exam-create/', core_views.exam_create, name='exam_create'),
-    path('exam/<int:pk>/', core_views.exam_detail, name='exam_detail'),
+    path("exams-list/", core_views.exams_list, name="exams_list"),
+    path("exam-create/", core_views.exam_create, name="exam_create"),
+    path("exam/<int:pk>/", core_views.exam_detail, name="exam_detail"),
     path(
-        'exam/<int:exam_pk>/question-create/',
+        "exam/<int:exam_pk>/question-create/",
         core_views.question_create,
-        name='question_create'
+        name="question_create",
     ),
-    path('exam-edit/<int:pk>/', core_views.exam_edit, name='exam_edit'),
+    path("exam-edit/<int:pk>/", core_views.exam_edit, name="exam_edit"),
+    path("question-edit/<int:pk>/", core_views.question_edit, name="question_edit"),
+    path("exam-delete/<int:pk>/", core_views.exam_delete, name="exam_delete"),
     path(
-        'question-edit/<int:pk>/',
-        core_views.question_edit,
-        name='question_edit'
+        "question-delete/<int:pk>/", core_views.question_delete, name="question_delete"
     ),
-    path('exam-delete/<int:pk>/', core_views.exam_delete, name='exam_delete'),
-    path(
-        'question-delete/<int:pk>/',
-        core_views.question_delete,
-        name='question_delete'
-    ),
-    path('exam-start/', core_views.exam_start, name='exam_start'),
-    path(
-        'submit/',
-        core_views.exam_submit,
-        name='exam_submit'
-    ),
-    path(
-        'clear/',
-        core_views.answer_clear,
-        name='answer_clear'
-    ),
-    path(
-        'answer/',
-        core_views.answer_submit,
-        name='answer_submit'
-    ),
-    path(
-        'question-list/',
-        core_views.question_list,
-        name='question_list'
-    ),
-    path(
-        'bookmark/',
-        core_views.bookmark,
-        name='bookmark'
-    ),
-
+    path("exam-start/", core_views.exam_start, name="exam_start"),
+    path("submit/", core_views.exam_submit, name="exam_submit"),
+    path("clear/", core_views.answer_clear, name="answer_clear"),
+    path("answer/", core_views.answer_submit, name="answer_submit"),
+    path("question-list/", core_views.question_list, name="question_list"),
+    path("bookmark/", core_views.bookmark, name="bookmark"),
     # users
+    path("register/", users_views.register, name="register"),
     path(
-        'staff-register/',
-        users_views.staff_register,
-        name='staff_register'
+        "login/",
+        auth_views.LoginView.as_view(template_name="users/login.html"),
+        name="login",
     ),
     path(
-        'student-mass-register/',
-        users_views.student_mass_register,
-        name='student_mass_register'
+        "logout/",
+        auth_views.LogoutView.as_view(template_name="users/logout.html"),
+        name="logout",
     ),
-    path('staff-login/', users_views.staff_login, name='staff_login'),
-    path('', users_views.student_login, name='student_login'),
+    path("profile/", users_views.profile, name="profile"),
+    path("student-profile/", users_views.student_profile, name="student_profile"),
+    path("student-delete/", users_views.student_delete, name="student_delete"),
+    path("teacher-profile/", users_views.teacher_profile, name="teacher_profile"),
+    path("teacher-delete/", users_views.teacher_delete, name="teacher_delete"),
     path(
-        'logout/',
-        auth_views.LogoutView.as_view(template_name='users/logout.html'),
-        name='logout'
-    ),
-    path('profile/', users_views.profile, name='profile'),
-    path(
-        'password-reset/',
-        auth_views.PasswordResetView.as_view(
-            template_name='users/password_reset.html'
-        ),
-        name='password_reset'
+        "password-reset/",
+        auth_views.PasswordResetView.as_view(template_name="users/password_reset.html"),
+        name="password_reset",
     ),
     path(
-        'password-reset/done/',
+        "password-reset/done/",
         auth_views.PasswordResetDoneView.as_view(
-            template_name='users/password_reset_done.html'
+            template_name="users/password_reset_done.html"
         ),
-        name='password_reset_done'
+        name="password_reset_done",
     ),
     path(
-        'password-reset-confirm/<uidb64>/<token>/',
+        "password-reset-confirm/<uidb64>/<token>/",
         auth_views.PasswordResetConfirmView.as_view(
-            template_name='users/password_reset_confirm.html'
+            template_name="users/password_reset_confirm.html"
         ),
-        name='password_reset_confirm'
+        name="password_reset_confirm",
     ),
     path(
-        'password-reset-complete/',
+        "password-reset-complete/",
         auth_views.PasswordResetCompleteView.as_view(
-            template_name='users/password_reset_complete.html'
+            template_name="users/password_reset_complete.html"
         ),
-        name='password_reset_complete'
+        name="password_reset_complete",
     ),
-    path('users-list/', users_views.users_list, name='users_list'),
-
+    path("users-list/", users_views.users_list, name="users_list"),
     # results
     path(
-        'exam/<int:exam_pk>/results/',
-        results_views.results_list,
-        name='results_list'
+        "exam/<int:exam_pk>/results/", results_views.results_list, name="results_list"
     ),
-    path(
-        'result/<int:pk>/',
-        results_views.result_detail,
-        name='result_detail'
-    ),
-    path(
-        'results/',
-        results_views.result_all,
-        name='result_all'
-    ),
+    path("result/<int:pk>/", results_views.result_detail, name="result_detail"),
+    path("results/", results_views.result_all, name="result_all"),
 ]
