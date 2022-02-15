@@ -49,7 +49,7 @@ def profile(request):
             form.save()
 
             messages.success(request, "Profile updated successfully.")
-            return redirect("profile")
+            return redirect("users:profile")
     else:
         form = UserUpdateForm(instance=request.user)
 
@@ -74,7 +74,7 @@ def student_profile(request):
             sr.save()
 
             messages.success(request, "Profile updated successfully.")
-            return redirect("student_profile")
+            return redirect("users:student_profile")
     else:
         if hasattr(user, "studentrequest"):
             form = StudentRequestForm(instance=user.studentrequest)
@@ -89,7 +89,7 @@ def student_profile(request):
 def student_delete(request):
     request.user.student.delete()
     messages.success(request, "Profile deleted successfully.")
-    return redirect("student_profile")
+    return redirect("users:student_profile")
 
 
 @login_required
@@ -110,7 +110,7 @@ def teacher_profile(request):
             tr.save()
 
             messages.success(request, "Profile updated successfully.")
-            return redirect("teacher_profile")
+            return redirect("users:teacher_profile")
     else:
         if hasattr(user, "teacherrequest"):
             form = TeacherRequestForm(instance=user.teacherrequest)
@@ -125,7 +125,7 @@ def teacher_profile(request):
 def teacher_delete(request):
     request.user.teacher.delete()
     messages.success(request, "Profile deleted successfully.")
-    return redirect("teacher_profile")
+    return redirect("users:teacher_profile")
 
 
 @login_required

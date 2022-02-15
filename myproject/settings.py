@@ -153,4 +153,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
 
-LOGIN_REDIRECT_URL = "profile"
+LOGIN_REDIRECT_URL = "users:profile"

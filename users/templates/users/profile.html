@@ -16,10 +16,10 @@
         </div>
         <div class="card-footer">
             {% if user.is_student %}
-                <a href="{% url 'student_profile' %}">Student Profile</a> | 
+                <a href="{% url 'users:student_profile' %}">Student Profile</a> | 
             {% endif %}
             {% if user.is_teacher %}
-                <a href="{% url 'teacher_profile' %}">Teacher Profile</a> | 
+                <a href="{% url 'users:teacher_profile' %}">Teacher Profile</a> | 
             {% endif %}
             <a href="{% url 'password_reset' %}">Reset Password</a>
         </div>
