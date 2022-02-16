@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "results.apps.ResultsConfig",
+    "teachers",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -139,7 +140,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
-LOGIN_URL = "staff_login"
+LOGIN_URL = "login"
 
 MESSAGE_TAGS = {
     messages.DEBUG: "secondary",

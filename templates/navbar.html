@@ -21,22 +21,12 @@
                     </li>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    {% if user|has_group:'admin' %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                Student mass register
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'users_list' %}">Users</a>
-                        </li>
-                    {% endif %}
                     {% if user|has_group:'teacher' or user|has_group:'admin' %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'exams_list' %}">Exams</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                            <a class="nav-link" href="{% url 'users:profile' %}">Profile</a>
                         </li>
                     {% endif %}
                     <li class="nav-item">

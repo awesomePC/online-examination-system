@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+    <h2 class="font-weight-bold">Students' profiles</h2>
+    <p>{{ user.teacher.standard }} {{ user.teacher.get_branch_display }} {{ user.teacher.division }}</p>
+    <hr>
+
+    <div class="form-group">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <p class="text-secondary">
+        {{ students|length }} Entr{{ students|length|pluralize:"y,ies" }} total
+    </p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Roll number</th>
+                    <th scope="col">Verified on</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>{{ student }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.student.roll_no }}</td>
+                        <td>{{ student.student.created|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'teachers:student_delete' student.student.pk %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger px-3 mb-1">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{% static 'js/search_table.js' %}"></script>
+{% endblock content %}

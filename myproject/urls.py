@@ -22,42 +22,43 @@ from results import views as results_views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
-        "login/",
+        "accounts/login/",
         auth_views.LoginView.as_view(template_name="users/login.html"),
         name="login",
     ),
     path(
-        "logout/",
+        "accounts/logout/",
         auth_views.LogoutView.as_view(template_name="users/logout.html"),
         name="logout",
     ),
     path(
-        "password-reset/",
+        "accounts/password-reset/",
         auth_views.PasswordResetView.as_view(template_name="users/password_reset.html"),
         name="password_reset",
     ),
     path(
-        "password-reset/done/",
+        "accounts/password-reset/done/",
         auth_views.PasswordResetDoneView.as_view(
             template_name="users/password_reset_done.html"
         ),
         name="password_reset_done",
     ),
     path(
-        "password-reset-confirm/<uidb64>/<token>/",
+        "accounts/password-reset-confirm/<uidb64>/<token>/",
         auth_views.PasswordResetConfirmView.as_view(
             template_name="users/password_reset_confirm.html"
         ),
         name="password_reset_confirm",
     ),
     path(
-        "password-reset-complete/",
+        "accounts/password-reset-complete/",
         auth_views.PasswordResetCompleteView.as_view(
             template_name="users/password_reset_complete.html"
         ),
         name="password_reset_complete",
     ),
-    path("", include("users.urls", namespace="users")),
+    path("accounts/", include("users.urls", namespace="users")),
+    path("", include("teachers.urls", namespace="teachers")),
     # core
     path("exams-list/", core_views.exams_list, name="exams_list"),
     path("exam-create/", core_views.exam_create, name="exam_create"),

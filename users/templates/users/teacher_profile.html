@@ -3,11 +3,11 @@
 {% block content %}
     {% if user.teacher %}
         <div class="alert alert-info alert-dismissible fade show" role="alert">
-            Your account is verified and active
+            Your account is verified
         </div>
     {% else %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            Your account is unverified. Create a profile and wait until an HOD confirms it
+            Your account is unverified. Create a profile and wait until an HOD accepts it
         </div>
     {% endif %}
 
@@ -34,7 +34,7 @@
             </form>
 
             {% if user.teacher %}
-                <form method="POST" action="{% url 'teacher_delete' %}">
+                <form method="POST" action="{% url 'users:teacher_delete' %}">
                     {% csrf_token %}
                     <button class="btn btn-danger btn-block">Delete</button>
                 </form>
