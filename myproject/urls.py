@@ -59,6 +59,7 @@ urlpatterns = [
     ),
     path("accounts/", include("users.urls", namespace="users")),
     path("", include("teachers.urls", namespace="teachers")),
+    path("", include("hod.urls", namespace="hod")),
     # core
     path("exams-list/", core_views.exams_list, name="exams_list"),
     path("exam-create/", core_views.exam_create, name="exam_create"),

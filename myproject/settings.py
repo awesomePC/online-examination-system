@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "results.apps.ResultsConfig",
     "teachers",
+    "hod",
 ]
 
 AUTH_USER_MODEL = "users.User"

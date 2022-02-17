@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+    <h2 class="font-weight-bold">Teachers' profile requests</h2>
+    <hr>
+
+    <div class="form-group">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <p class="text-secondary">
+        {{ teachers|length }} Entr{{ teachers|length|pluralize:"y,ies" }} total
+    </p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Request ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Standard</th>
+                    <th scope="col">Branch</th>
+                    <th scope="col">Division</th>
+                    <th scope="col">Updated on</th>
+                    <th scope="col">Created on</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.id }}</td>
+                        <td>{{ teacher.teacherrequest.id }}</td>
+                        <td>{{ teacher }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>{{ teacher.teacherrequest.standard }}</td>
+                        <td>{{ teacher.teacherrequest.get_branch_display }}</td>
+                        <td>{{ teacher.teacherrequest.division }}</td>
+                        <td>{{ teacher.teacherrequest.updated|date:"M d, Y" }}</td>
+                        <td>{{ teacher.teacherrequest.created|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'hod:teacher_request_accept' teacher.teacherrequest.pk %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-success px-3 mb-1">Accept</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{% static 'js/search_table.js' %}"></script>
+{% endblock content %}
