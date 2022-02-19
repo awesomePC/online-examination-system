@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
-from core import views as core_views
 from results import views as results_views
 
 urlpatterns = [
@@ -58,29 +57,10 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("accounts/", include("users.urls", namespace="users")),
-    path("", include("teachers.urls", namespace="teachers")),
-    path("", include("hod.urls", namespace="hod")),
-    # core
-    path("exams-list/", core_views.exams_list, name="exams_list"),
-    path("exam-create/", core_views.exam_create, name="exam_create"),
-    path("exam/<int:pk>/", core_views.exam_detail, name="exam_detail"),
-    path(
-        "exam/<int:exam_pk>/question-create/",
-        core_views.question_create,
-        name="question_create",
-    ),
-    path("exam-edit/<int:pk>/", core_views.exam_edit, name="exam_edit"),
-    path("question-edit/<int:pk>/", core_views.question_edit, name="question_edit"),
-    path("exam-delete/<int:pk>/", core_views.exam_delete, name="exam_delete"),
-    path(
-        "question-delete/<int:pk>/", core_views.question_delete, name="question_delete"
-    ),
-    path("exam-start/", core_views.exam_start, name="exam_start"),
-    path("submit/", core_views.exam_submit, name="exam_submit"),
-    path("clear/", core_views.answer_clear, name="answer_clear"),
-    path("answer/", core_views.answer_submit, name="answer_submit"),
-    path("question-list/", core_views.question_list, name="question_list"),
-    path("bookmark/", core_views.bookmark, name="bookmark"),
+    path("teachers/", include("teachers.urls", namespace="teachers")),
+    path("hod/", include("hod.urls", namespace="hod")),
+    path("students/", include("students.urls", namespace="students")),
+    path("", include("core.urls")),
     # results
     path(
         "exam/<int:exam_pk>/results/", results_views.results_list, name="results_list"

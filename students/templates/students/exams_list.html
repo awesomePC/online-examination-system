@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+    <h2 class="font-weight-bold">Active Exams</h2>
+    <hr>
+
+    <div class="form-group">
+        <label for="search-input">Search</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    </div>
+    <p class="text-secondary">
+        {{ exams|length }} Entr{{ exams|length|pluralize:"y,ies" }} total
+    </p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Exam ID</th>
+                    <th scope="col">Exam</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Questions</th>
+                    <th scope="col">Max marks</th>
+                    <th scope="col">Passing percentage</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for exam in exams %}
+                    <tr>
+                        <td>{{ exam.id }}</td>
+                        <td>{{ exam }}</td>
+                        <td>{{ exam.duration }}</td>
+                        <td>{{ exam.get_num_questions }}</td>
+                        <td>{{ exam.get_max_marks }}</td>
+                        <td>{{ exam.passing_percentage }}%</td>
+                        <td>
+                            <form method="POST" action="{% url 'students:exam_start' exam.pk %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-success px-3 mb-1">Start</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{% static 'js/search_table.js' %}"></script>
+{% endblock content %}
