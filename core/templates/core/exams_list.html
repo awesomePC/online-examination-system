@@ -14,23 +14,23 @@
         {{ exams|length }} Entr{{ exams|length|pluralize:"y,ies" }} total
     </p>
     <div class="table-responsive">
-        <table class="table table-bordered table-sm">
+        <table class="table table-striped table-sm">
             <thead class="thead-light">
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Exam</th>
+                    <th scope="col">Exam ID</th>
+                    <th scope="col">Exam name</th>
                     <th scope="col">Duration</th>
-                    <th scope="col">Questions</th>
+                    <th scope="col">Total questions</th>
                     <th scope="col">Max marks</th>
                     <th scope="col">Passing percentage</th>
-                    <th scope="col">Active</th>
+                    <th scope="col">Is active</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody id="search-table">
                 {% for exam in exams %}
                     <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ exam.id }}</td>
                         <td>{{ exam }}</td>
                         <td>{{ exam.duration }}</td>
                         <td>{{ exam.get_num_questions }}</td>
@@ -38,8 +38,8 @@
                         <td>{{ exam.passing_percentage }}%</td>
                         <td>{{ exam.active }}</td>
                         <td>
-                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-info px-3 mb-1">View</a>
-                            <a href="{% url 'results_list' exam.pk %}" class="btn btn-success px-3 mb-1">Result</a>
+                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-sm btn-info px-3 mb-1">View</a>
+                            <a href="{% url 'teachers:result_list' exam.pk %}" class="btn btn-sm btn-success px-3 mb-1">Result</a>
                         </td>
                     </tr>
                 {% endfor %}

@@ -33,7 +33,7 @@ class User(AbstractUser):
 
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     standard = models.CharField(max_length=2, choices=STANDARD_CHOICES, default="FE")
     branch = models.CharField(max_length=5, choices=BRANCH_CHOICES, default="COMP")
     division = models.CharField(max_length=1, choices=DIVISION_CHOICES, default="A")

@@ -12,4 +12,6 @@ urlpatterns = [
         student_request_accept,
         name="student_request_accept",
     ),
+    path("exams/<int:exam_pk>/results/", result_list, name="result_list"),
+    path("results/<int:pk>/", result_detail, name="result_detail"),
 ]

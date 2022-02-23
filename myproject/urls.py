@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
-from results import views as results_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -61,10 +60,4 @@ urlpatterns = [
     path("hod/", include("hod.urls", namespace="hod")),
     path("students/", include("students.urls", namespace="students")),
     path("", include("core.urls")),
-    # results
-    path(
-        "exam/<int:exam_pk>/results/", results_views.results_list, name="results_list"
-    ),
-    path("result/<int:pk>/", results_views.result_detail, name="result_detail"),
-    path("results/", results_views.result_all, name="result_all"),
 ]

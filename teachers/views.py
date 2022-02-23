@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
 from core.decorators import *
+from core.models import Exam, Session
 from users.models import Student, StudentRequest
 
 User = get_user_model()
@@ -89,3 +90,31 @@ def student_request_accept(request, pk):
         messages.success(request, "Profile request accepted")
 
     return redirect("teachers:students_request_list")
+
+
+@login_required
+@is_verified_teacher
+def result_list(request, exam_pk):
+    exam = get_object_or_404(Exam, pk=exam_pk)
+    if exam.user != request.user:
+        raise PermissionDenied()
+    sessions = exam.session_set.filter(completed=True)
+    context = {
+        "exam": exam,
+        "sessions": sessions,
+    }
+    return render(request, "teachers/result_list.html", context)
+
+
+@login_required
+@is_verified_teacher
+def result_detail(request, pk):
+    session = get_object_or_404(Session, pk=pk, completed=True)
+    if session.exam.user != request.user:
+        raise PermissionDenied()
+
+    context = {
+        "session": session,
+        "answers": session.answer_set.all().order_by("question__created"),
+    }
+    return render(request, "teachers/result_detail.html", context)

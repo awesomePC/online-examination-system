@@ -18,13 +18,19 @@ def exams_list(request):
 @is_verified_student
 def exam_start(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
-    if not Session.objects.filter(
-        user=request.user, exam=exam, completed=False
-    ).exists():
+    if not request.user.session_set.filter(exam=exam, completed=False).exists():
         Session.objects.create(
             user=request.user,
+            student=request.user.student,
             exam=exam,
             seed=random.randrange(10000),
         )
 
     return redirect("exam_start", exam_pk=pk)
+
+
+@login_required
+@is_verified_student
+def result_list(request):
+    sessions = request.user.session_set.filter(completed=True)
+    return render(request, "students/result_list.html", {"sessions": sessions})

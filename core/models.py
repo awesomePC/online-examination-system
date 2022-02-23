@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+from users.models import Student
 
 User = get_user_model()
 
@@ -80,13 +81,14 @@ class Question(models.Model):
 
 
 class Session(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    submitted = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     seed = models.PositiveIntegerField()
     completed = models.BooleanField(default=False)
     bookmarks = models.ManyToManyField(Question)
+    created = models.DateTimeField(auto_now_add=True)
+    submitted = models.DateTimeField(null=True, blank=True)
 
     def get_questions(self):
         questions = list(self.exam.question_set.filter(created__lt=self.created))
