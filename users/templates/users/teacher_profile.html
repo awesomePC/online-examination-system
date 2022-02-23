@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    {% if user.teacher %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            Your account is verified
+        </div>
+    {% else %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Your account is unverified. Create a profile and wait until an HOD accepts it
+        </div>
+    {% endif %}
+
+    <div class="card mx-auto max-width-650">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4 pb-2">Edit Teacher Profile</legend>
+                    {% if user.teacherrequest %}
+                        <p>Request ID: {{ user.teacherrequest.id }}</p>
+                    {% endif %}
+
+                    {{ form|crispy }}
+                </fieldset>
+
+                {% if not user.teacher %}
+                    <div class="form-group">
+                        <button class="btn btn-success btn-block" type="submit">
+                            {% if user.teacherrequest %}Update{% else %}Create{% endif %}
+                        </button>
+                    </div>
+                {% endif %}
+            </form>
+
+            {% if user.teacher %}
+                <form method="POST" action="{% url 'users:teacher_delete' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger btn-block">Delete</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

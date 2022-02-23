@@ -44,7 +44,7 @@
     <hr>
 
     <!-- Question form -->
-    <form id="question-form" method="POST" action="{% url 'answer_submit' %}" class="font-20">
+    <form id="question-form" method="POST" action="{% url 'answer_submit' session.exam.pk %}" class="font-20">
         {% csrf_token %}
         <input type="hidden" name="q_num">
         <p class="mb-4 font-weight-bold"> 
@@ -94,10 +94,10 @@
             <!-- Buttons -->
             <div class="row">
                 <div class="col-sm-4 text-center my-1">
-                    <button id="btn-all-ques" data-href="{% url 'question_list' %}" class="btn btn-info" data-toggle="modal" data-target="#modal-q-list">
+                    <button id="btn-all-ques" data-href="{% url 'question_list' session.exam.pk %}" class="btn btn-info" data-toggle="modal" data-target="#modal-q-list">
                         Questions
                     </button>
-                    <form id="bookmark-form" method="POST" action="{% url 'bookmark' %}" class="d-inline">
+                    <form id="bookmark-form" method="POST" action="{% url 'bookmark' session.exam.pk %}" class="d-inline">
                         {% csrf_token %}
                         <input type="hidden" name="q_num">
                         <button type="submit" class="btn btn-warning">Bookmark</button>
@@ -114,14 +114,14 @@
                     </button>
                 </div>
                 <div class="col-sm-4 text-center my-1">
-                    <form id="clear-form" method="POST" action="{% url 'answer_clear' %}" class="d-inline">
+                    <form id="clear-form" method="POST" action="{% url 'answer_clear' session.exam.pk %}" class="d-inline">
                         {% csrf_token %}
                         <input type="hidden" name="q_num">
                         <button id="clear-btn" type="submit" class="btn btn-danger">
                             Clear
                         </button>
                     </form>
-                    <form id="submit-form" method="POST" action="{% url 'exam_submit' %}" class="d-inline confirm-form-submit" data-confirm-msg="This action can't be undone.&#10;are you sure to continue?">
+                    <form id="submit-form" method="POST" action="{% url 'exam_submit' session.exam.pk %}" class="d-inline confirm-form-submit" data-confirm-msg="This action can't be undone.&#10;are you sure to continue?">
                         {% csrf_token %}
                         <button id="submit-btn" type="submit" class="btn btn-success">
                             SUBMIT EXAM

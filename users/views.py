@@ -2,7 +2,7 @@ from csv import DictReader
 from io import TextIOWrapper
 import random
 from django.shortcuts import render, redirect
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -11,199 +11,119 @@ from django.contrib.auth.models import Group
 from django.http import Http404
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.views.decorators.http import require_POST
 from myproject.settings import EMAIL_HOST_USER
 from core.decorators import group_required
 from core.models import Session
 from .forms import *
 from .models import User
 
-def staff_register(request):
-    if request.method == 'POST':
-        form = StaffRegisterForm(request.POST)
+
+def register(request):
+    if request.method == "POST":
+        form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, 
-                f'Account created for {username}. They can now login.')
-            messages.info(request, 
-                'Contact an admin to confirm your account.')
+            user = form.save()
+            account_type = form.cleaned_data.get("account_type")
+            if account_type == "S":
+                user.is_student = True
+            else:
+                user.is_teacher = True
+            user.save()
 
-            return redirect('staff_login')
+            messages.success(
+                request, f"Account created for {user.username}. They can now login."
+            )
+            return redirect("login")
     else:
-        form = StaffRegisterForm()
+        form = UserRegisterForm()
 
-    return render(request, 'users/staff_register.html', {'form': form})
+    return render(request, "users/register.html", {"form": form})
+
 
 @login_required
-@group_required('admin')
-def student_mass_register(request):
-    if request.method == 'POST':
-        form = StudentRegisterForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = form.cleaned_data.get('file')
-            file = TextIOWrapper(file, encoding='utf-8')
-            dict_reader = DictReader(file)
-
-            create_counter = 0
-            update_counter = 0
-            for row in dict_reader:
-                user, created = User.objects.update_or_create(
-                    username=row['student id'],
-                    defaults={'email': row['email']}
-                )
-
-                if created:
-                    create_counter += 1
-                    group = Group.objects.get(name='student')
-                    user.groups.add(group)
-
-                    password = User.objects.make_random_password()
-                    user.set_password(password)
-                    user.save()
-
-                    subject = 'Username and Password'
-                    html = render_to_string(
-                        'email/username_and_password.html',
-                        {'user': user, 'raw_password': password}
-                    )
-                    plain = strip_tags(html)
-                    from_ = EMAIL_HOST_USER
-
-                    user.email_user(subject, plain, from_, html_message=html)
-
-                else:
-                    update_counter += 1
-
-            if create_counter:
-                messages.success(request,
-                    f'Successfully created {create_counter} user(s).')
-            if update_counter:
-                messages.info(request,
-                    f'Successfully updated {update_counter} user(s).')
-
-            return redirect('student_mass_register')
-    else:
-        form = StudentRegisterForm()
-
-    return render(request, 'users/student_mass_register.html', {'form': form})
-
-def staff_login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            groups = ('admin', 'teacher')
-            if not (user.groups.filter(name__in=groups).exists() or
-                    user.is_superuser):
-                messages.error(request,
-                    'Only confirmed staff can login.')
-
-                return redirect('staff_login')
-
-            login(request, user)
-            next_ = request.GET.get("next")
-
-            if next_:
-                return redirect(next_)
-            
-            return redirect('exams_list')
-
-    else:
-        form = AuthenticationForm()
-
-    return render(request, 'users/staff_login.html', {'form': form})
-
-def student_login(request):
-    if (request.user.is_authenticated and
-            request.user.session_set.filter(completed=False).exists()):
-        return redirect('exam_start')
-
-    if request.method == 'POST':
-        l_form = StudentLoginForm(data=request.POST)
-        e_form = ExamChoiceForm(request.POST)
-
-        if l_form.is_valid() and e_form.is_valid():
-            user = l_form.get_user()
-            if not (user.groups.filter(name='student').exists() or
-                    user.is_superuser):
-                messages.error(request,
-                    'Only confirmed student can login.')
-
-                return redirect('student_login')
-
-            exam = e_form.cleaned_data.get('exam')
-            try:
-                session = user.session_set.get(completed=False)
-                if session.exam != exam:
-                    messages.error(request,
-                        'Only one exam can be taken at a time. '
-                        f'Please complete "{session}" first.')
-
-                    return redirect('student_login')
-
-            except ObjectDoesNotExist:
-                if user.session_set.filter(exam=exam).exists():
-                    messages.error(request, 'An exam can only be taken once.')
-                    return redirect('student_login')
-
-                if not exam.question_set.filter(deleted=None).exists():
-                    raise Http404()
-
-                Session.objects.create(
-                    user=user,
-                    exam=exam,
-                    seed=random.randrange(10000),
-                    completed=False
-                )
-
-            login(request, user)
-
-            return redirect('exam_start')
-
-    else:
-        l_form = StudentLoginForm()
-        e_form = ExamChoiceForm()
-
-    context = {
-        'l_form': l_form,
-        'e_form': e_form,
-    }
-    return render(request, 'users/student_login.html', context)
-
-@login_required
-@group_required('admin', 'teacher')
 def profile(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
 
-            messages.success(request, 'Profile updated successfully.')
-
-            return redirect('profile')
+            messages.success(request, "Profile updated successfully.")
+            return redirect("users:profile")
     else:
         form = UserUpdateForm(instance=request.user)
 
-    return render(request, 'users/profile.html', {'form': form})
+    return render(request, "users/profile.html", {"form": form})
+
 
 @login_required
-@group_required('admin')
-def users_list(request):
-    if request.method == 'POST':
-        form = ActionForm(request.POST)
+def student_profile(request):
+    user = request.user
+    if hasattr(user, "student"):
+        form = StudentForm(instance=user.student)
+
+    elif request.method == "POST":
+        if hasattr(user, "studentrequest"):
+            form = StudentRequestForm(request.POST, instance=user.studentrequest)
+        else:
+            form = StudentRequestForm(request.POST)
+
         if form.is_valid():
-            queryset = User.objects.filter(
-                pk__in=request.POST.getlist('users')
-            )
-            ACTIONS[form.cleaned_data.get('action')](request, queryset)
+            sr = form.save(commit=False)
+            sr.user = user
+            sr.save()
 
-            return redirect('users_list')
-
+            messages.success(request, "Profile updated successfully.")
+            return redirect("users:student_profile")
     else:
-        form = ActionForm()
+        if hasattr(user, "studentrequest"):
+            form = StudentRequestForm(instance=user.studentrequest)
+        else:
+            form = StudentRequestForm()
 
-    context = {
-        'form': form,
-        'users': User.objects.all().order_by('username')
-    }
-    return render(request, 'users/users_list.html', context)
+    return render(request, "users/student_profile.html", {"form": form})
+
+
+@require_POST
+@login_required
+def student_delete(request):
+    request.user.student = None
+    request.user.save()
+    messages.success(request, "Profile deleted successfully.")
+    return redirect("users:student_profile")
+
+
+@login_required
+def teacher_profile(request):
+    user = request.user
+    if hasattr(user, "teacher"):
+        form = TeacherForm(instance=user.teacher)
+
+    elif request.method == "POST":
+        if hasattr(user, "teacherrequest"):
+            form = TeacherRequestForm(request.POST, instance=user.teacherrequest)
+        else:
+            form = TeacherRequestForm(request.POST)
+
+        if form.is_valid():
+            tr = form.save(commit=False)
+            tr.user = user
+            tr.save()
+
+            messages.success(request, "Profile updated successfully.")
+            return redirect("users:teacher_profile")
+    else:
+        if hasattr(user, "teacherrequest"):
+            form = TeacherRequestForm(instance=user.teacherrequest)
+        else:
+            form = TeacherRequestForm()
+
+    return render(request, "users/teacher_profile.html", {"form": form})
+
+
+@require_POST
+@login_required
+def teacher_delete(request):
+    request.user.teacher.delete()
+    messages.success(request, "Profile deleted successfully.")
+    return redirect("users:teacher_profile")

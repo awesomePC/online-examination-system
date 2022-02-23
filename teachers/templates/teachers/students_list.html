@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+    <h2 class="font-weight-bold">Students' profiles</h2>
+    <p>{{ user.teacher.standard }} {{ user.teacher.get_branch_display }} {{ user.teacher.division }}</p>
+    <hr>
+
+    <form>
+    <div class="input-group my-3">
+      <input class="form-control py-2" type="search" name="search" placeholder="Search...">
+      <span class="input-group-append">
+        <button class="btn btn-outline-secondary">
+            <i class="fa fa-search"></i>
+        </button>
+      </span>
+    </div>
+  </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Roll number</th>
+                    <th scope="col">Verified on</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>{{ student }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.student.roll_no }}</td>
+                        <td>{{ student.student.created|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'teachers:student_delete' student.student.pk %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger px-3 mb-1">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'pagination.html' with page=students %}
+
+    <script type="text/javascript" src="{% static 'js/keep_params.js' %}"></script>
+{% endblock content %}
