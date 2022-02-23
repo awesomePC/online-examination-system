@@ -45,6 +45,9 @@ class Exam(models.Model):
     passing_percentage = models.FloatField(default=0)
     active = models.BooleanField()
 
+    class Meta:
+        ordering = ("-created",)
+
     @admin.display(description="no. of questions")
     def get_num_questions(self):
         return self.question_set.filter(deleted=None).count()

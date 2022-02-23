@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -15,7 +16,21 @@ from .models import Exam, Question, Answer, Session
 @login_required
 @is_verified_teacher
 def exams_list(request):
-    exams = request.user.exam_set.all().order_by("-created")
+    search = request.GET.get("search", None)
+    if search:
+        exams = request.user.exam_set.filter(name__icontains=search)
+    else:
+        exams = request.user.exam_set.all()
+
+    paginator = Paginator(exams, 15)
+    page = request.GET.get("page")
+    try:
+        exams = paginator.page(page)
+    except PageNotAnInteger:
+        exams = paginator.page(1)
+    except EmptyPage:
+        exams = paginator.page(paginator.num_pages)
+
     return render(request, "core/exams_list.html", {"exams": exams})
 
 
@@ -45,7 +60,22 @@ def exam_detail(request, pk):
     if exam.user != request.user:
         raise PermissionDenied()
 
-    context = {"exam": exam, "questions": exam.question_set.filter(deleted=None)}
+    search = request.GET.get("search", None)
+    if search:
+        questions = exam.question_set.filter(deleted=None, question__icontains=search)
+    else:
+        questions = exam.question_set.filter(deleted=None)
+
+    paginator = Paginator(questions, 15)
+    page = request.GET.get("page")
+    try:
+        questions = paginator.page(page)
+    except PageNotAnInteger:
+        questions = paginator.page(1)
+    except EmptyPage:
+        questions = paginator.page(paginator.num_pages)
+
+    context = {"exam": exam, "questions": questions}
     return render(request, "core/exam_detail.html", context)
 
 

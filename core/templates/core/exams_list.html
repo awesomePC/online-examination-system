@@ -6,13 +6,17 @@
     <hr>
     <a href="{% url 'exam_create' %}" class="btn btn-success px-3 mb-3">Create Exam</a>
 
-    <div class="form-group">
-        <label for="search-input">Search</label>
-        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    <form>
+    <div class="input-group my-3">
+      <input class="form-control py-2" type="search" name="search" placeholder="Search...">
+      <span class="input-group-append">
+        <button class="btn btn-outline-secondary">
+            <i class="fa fa-search"></i>
+        </button>
+      </span>
     </div>
-    <p class="text-secondary">
-        {{ exams|length }} Entr{{ exams|length|pluralize:"y,ies" }} total
-    </p>
+  </form>
+    
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead class="thead-light">
@@ -47,5 +51,7 @@
         </table>
     </div>
 
-    <script src="{% static 'js/search_table.js' %}"></script>
+    {% include 'pagination.html' with page=exams %}
+
+    <script type="text/javascript" src="{% static 'js/keep_params.js' %}"></script>
 {% endblock content %}

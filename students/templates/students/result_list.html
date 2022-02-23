@@ -5,13 +5,17 @@
     <h1 class="font-weight-bold">Results</h1>
     <hr>
 
-    <div class="form-group mt-4">
-        <label for="search-input">Search</label>
-        <input type="text" id="search-input" class="form-control" placeholder="Search..." autofocus>
+    <form>
+    <div class="input-group my-3">
+      <input class="form-control py-2" type="search" name="search" placeholder="Search...">
+      <span class="input-group-append">
+        <button class="btn btn-outline-secondary">
+            <i class="fa fa-search"></i>
+        </button>
+      </span>
     </div>
-    <p class="text-secondary">
-        {{ sessions|length }} Entr{{ sessions|length|pluralize:"y,ies" }} total
-    </p>
+  </form>
+
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead class="thead-light">
@@ -53,5 +57,7 @@
         </table>
     </div>
 
-    <script src="{% static 'js/search_table.js' %}"></script>
+    {% include 'pagination.html' with page=sessions %}
+
+    <script type="text/javascript" src="{% static 'js/keep_params.js' %}"></script>
 {% endblock content %}

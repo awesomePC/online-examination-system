@@ -127,21 +127,3 @@ def teacher_delete(request):
     request.user.teacher.delete()
     messages.success(request, "Profile deleted successfully.")
     return redirect("users:teacher_profile")
-
-
-@login_required
-@group_required("admin")
-def users_list(request):
-    if request.method == "POST":
-        form = ActionForm(request.POST)
-        if form.is_valid():
-            queryset = User.objects.filter(pk__in=request.POST.getlist("users"))
-            ACTIONS[form.cleaned_data.get("action")](request, queryset)
-
-            return redirect("users_list")
-
-    else:
-        form = ActionForm()
-
-    context = {"form": form, "users": User.objects.all().order_by("username")}
-    return render(request, "users/users_list.html", context)
