@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
-from users.views import demo_login
+from users.views import redirect_on_login
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", redirect_on_login, name="redirect_on_login"),
     path(
         "accounts/login/",
         auth_views.LoginView.as_view(template_name="users/login.html"),
@@ -61,5 +62,4 @@ urlpatterns = [
     path("hod/", include("hod.urls", namespace="hod")),
     path("students/", include("students.urls", namespace="students")),
     path("", include("core.urls")),
-    path("", demo_login, name="demo_login"),
 ]

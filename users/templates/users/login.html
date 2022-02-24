@@ -16,7 +16,7 @@
                     </small>
                 </div>
             </form>
-            <form method="POST" action="{% url 'demo_login' %}">
+            <form method="POST" action="{% url 'users:demo_login' %}">
                 {% csrf_token %}
                 <button class="btn btn-block btn-dark">Demo login</button>
             </form>
