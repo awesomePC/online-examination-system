@@ -10,4 +10,5 @@ urlpatterns = [
     path("student-delete/", student_delete, name="student_delete"),
     path("teacher-profile/", teacher_profile, name="teacher_profile"),
     path("teacher-delete/", teacher_delete, name="teacher_delete"),
+    path("redirect-on-login/", redirect_on_login, name="redirect_on_login"),
 ]

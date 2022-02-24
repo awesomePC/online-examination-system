@@ -116,3 +116,21 @@ def teacher_delete(request):
     request.user.teacher.delete()
     messages.success(request, "Profile deleted successfully.")
     return redirect("users:teacher_profile")
+
+
+@login_required
+def redirect_on_login(request):
+    if request.user.is_student:
+        if hasattr(request.user, "student"):
+            return redirect("students:exams_list")
+        else:
+            return redirect("users:student_profile")
+
+    elif request.user.is_teacher:
+        if hasattr(request.user, "teacher"):
+            return redirect("teachers:students_list")
+        else:
+            return redirect("users:teacher_profile")
+
+    else:
+        return redirect("hod:teachers_list")
