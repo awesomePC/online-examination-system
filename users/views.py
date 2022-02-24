@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .forms import *
@@ -134,3 +135,10 @@ def redirect_on_login(request):
 
     else:
         return redirect("hod:teachers_list")
+
+
+@require_POST
+def demo_login(request):
+    user = User.objects.get(pk=1)
+    login(request, user)
+    return redirect("users:redirect_on_login")

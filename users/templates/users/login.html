@@ -16,6 +16,10 @@
                     </small>
                 </div>
             </form>
+            <form method="POST" action="{% url 'demo_login' %}">
+                {% csrf_token %}
+                <button class="btn btn-block btn-dark">Demo login</button>
+            </form>
             <div class="border-top pt-3">
                 <small class="text-muted">
                     Need an account?

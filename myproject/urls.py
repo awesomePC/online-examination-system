@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
+from users.views import demo_login
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -60,4 +61,5 @@ urlpatterns = [
     path("hod/", include("hod.urls", namespace="hod")),
     path("students/", include("students.urls", namespace="students")),
     path("", include("core.urls")),
+    path("", demo_login, name="demo_login"),
 ]
