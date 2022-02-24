@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "djcelery_email",
     "crispy_forms",
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
@@ -148,11 +147,11 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
-EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
 
-LOGIN_REDIRECT_URL = "users:profile"
+LOGIN_REDIRECT_URL = "users:redirect_on_login"

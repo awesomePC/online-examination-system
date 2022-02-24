@@ -3,13 +3,12 @@
 {% load my_extras %}
 {% block content %}
     <h1 class="font-weight-bold">Results</h1>
-    <hr>
 
     <form>
     <div class="input-group my-3">
       <input class="form-control py-2" type="search" name="search" placeholder="Search...">
       <span class="input-group-append">
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-secondary">
             <i class="fa fa-search"></i>
         </button>
       </span>
@@ -33,6 +32,7 @@
                     <th scope="col">Passing percentage</th>
                     <th scope="col">Passing status</th>
                     <th scope="col">Submitted on</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody id="search-table">
@@ -51,6 +51,7 @@
                         <td>{{ session.exam.passing_percentage }}%</td>
                         <td>{{ session.get_passing_status|bool_to_passing_status }}</td>
                         <td>{{ session.submitted|date:"M d, Y" }}</td>
+                        <td><a href="{% url 'students:result_detail' session.pk %}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -4,13 +4,13 @@
     
     <h2 class="font-weight-bold">Your Exams</h2>
     <hr>
-    <a href="{% url 'exam_create' %}" class="btn btn-success px-3 mb-3">Create Exam</a>
+    <a href="{% url 'exam_create' %}" class="btn btn-success px-3 mb-3"><i class="fas fa-plus"></i> Create Exam</a>
 
     <form>
     <div class="input-group my-3">
       <input class="form-control py-2" type="search" name="search" placeholder="Search...">
       <span class="input-group-append">
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-secondary">
             <i class="fa fa-search"></i>
         </button>
       </span>
@@ -28,6 +28,8 @@
                     <th scope="col">Max marks</th>
                     <th scope="col">Passing percentage</th>
                     <th scope="col">Is active</th>
+                    <th scope="col">Show result</th>
+                    <th scope="col"></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -41,9 +43,12 @@
                         <td>{{ exam.get_max_marks }}</td>
                         <td>{{ exam.passing_percentage }}%</td>
                         <td>{{ exam.active }}</td>
+                        <td>{{ exam.show_result }}</td>
                         <td>
-                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-sm btn-info px-3 mb-1">View</a>
-                            <a href="{% url 'teachers:result_list' exam.pk %}" class="btn btn-sm btn-success px-3 mb-1">Result</a>
+                            <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-sm btn-info px-3 mb-1"><i class="fas fa-eye"></i> View</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'teachers:result_list' exam.pk %}" class="btn btn-sm btn-warning px-3 mb-1"><i class="fas fa-poll"></i> Result</a>
                         </td>
                     </tr>
                 {% endfor %}

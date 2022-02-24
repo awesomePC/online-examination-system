@@ -5,7 +5,7 @@
     <h1 class="font-weight-bold">({{ session.exam.id }}) {{ session.exam }}</h1>
     <p>{{ session.student.standard }} {{ session.student.get_branch_display }} {{ session.student.division }} {{ session.student.roll_no }} | {{ session.submitted|date:"M d, Y" }}</p>
     <hr>
-    <a href="{% url 'teachers:result_list' session.exam.pk %}" class="btn btn-secondary mb-1"><i class="fas fa-angle-left"></i> Back</a>
+    <a href="{% url 'students:result_list' %}" class="btn btn-secondary mb-1"><i class="fas fa-angle-left"></i> Back</a>
 
     <form>
     <div class="input-group my-3">

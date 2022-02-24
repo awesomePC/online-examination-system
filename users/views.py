@@ -1,20 +1,9 @@
-from csv import DictReader
-from io import TextIOWrapper
-import random
 from django.shortcuts import render, redirect
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import Group
-from django.http import Http404
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
-from myproject.settings import EMAIL_HOST_USER
-from core.decorators import group_required
-from core.models import Session
 from .forms import *
 from .models import User
 
@@ -87,8 +76,9 @@ def student_profile(request):
 @require_POST
 @login_required
 def student_delete(request):
-    request.user.student = None
-    request.user.save()
+    student = request.user.student
+    student.user = None
+    student.save()
     messages.success(request, "Profile deleted successfully.")
     return redirect("users:student_profile")
 
@@ -127,3 +117,28 @@ def teacher_delete(request):
     request.user.teacher.delete()
     messages.success(request, "Profile deleted successfully.")
     return redirect("users:teacher_profile")
+
+
+@login_required
+def redirect_on_login(request):
+    if request.user.is_student:
+        if hasattr(request.user, "student"):
+            return redirect("students:exams_list")
+        else:
+            return redirect("users:student_profile")
+
+    elif request.user.is_teacher:
+        if hasattr(request.user, "teacher"):
+            return redirect("teachers:students_list")
+        else:
+            return redirect("users:teacher_profile")
+
+    else:
+        return redirect("hod:teachers_list")
+
+
+@require_POST
+def demo_login(request):
+    user = User.objects.get(pk=1)
+    login(request, user)
+    return redirect("users:redirect_on_login")

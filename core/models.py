@@ -44,6 +44,7 @@ class Exam(models.Model):
     )
     passing_percentage = models.FloatField(default=0)
     active = models.BooleanField()
+    show_result = models.BooleanField()
 
     class Meta:
         ordering = ("-created",)
@@ -77,7 +78,7 @@ class Question(models.Model):
     deleted = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ["created"]
+        ordering = ("created",)
 
     def __str__(self):
         return self.question
@@ -92,6 +93,9 @@ class Session(models.Model):
     bookmarks = models.ManyToManyField(Question)
     created = models.DateTimeField(auto_now_add=True)
     submitted = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created",)
 
     def get_questions(self):
         questions = list(self.exam.question_set.filter(created__lt=self.created))
