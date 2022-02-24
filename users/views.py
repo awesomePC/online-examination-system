@@ -141,4 +141,4 @@ def redirect_on_login(request):
 def demo_login(request):
     user = User.objects.get(pk=1)
     login(request, user)
-    return redirect("users:redirect_on_login")
+    return redirect("redirect_on_login")
