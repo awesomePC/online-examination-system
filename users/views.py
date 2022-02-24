@@ -1,20 +1,8 @@
-from csv import DictReader
-from io import TextIOWrapper
-import random
 from django.shortcuts import render, redirect
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import Group
-from django.http import Http404
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
-from myproject.settings import EMAIL_HOST_USER
-from core.decorators import group_required
-from core.models import Session
 from .forms import *
 from .models import User
 

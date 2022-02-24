@@ -39,7 +39,7 @@
                         <td>{{ exam.get_max_marks }}</td>
                         <td>{{ exam.passing_percentage }}%</td>
                         <td>
-                            <form method="POST" action="{% url 'students:exam_start' exam.pk %}">
+                            <form method="POST" action="{% url 'students:exam_start' exam.pk %}" class="confirm-form-submit" data-confirm-msg="timer will be started immediately.&#10;are you sure to continue?">
                                 {% csrf_token %}
                                 <button class="btn btn-sm btn-success px-3 mb-1">Start</button>
                             </form>
@@ -53,4 +53,5 @@
     {% include 'pagination.html' with page=exams %}
 
     <script type="text/javascript" src="{% static 'js/keep_params.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/confirm_form_submit.js' %}"></script>
 {% endblock content %}
