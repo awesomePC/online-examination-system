@@ -43,10 +43,10 @@ def exam_start(request, pk):
         messages.error(request, "An exam can only be taken once.")
         return redirect("students:exams_list")
 
-    if (
-        not request.user.session_set.filter(exam=exam, completed=False).exists()
-        and exam.question_set.exclude(deleted=None).exists()
-    ):
+    if not request.user.session_set.filter(exam=exam, completed=False).exists():
+        if not exam.question_set.filter(deleted=None).exists():
+            raise PermissionDenied()
+
         Session.objects.create(
             user=request.user,
             student=request.user.student,

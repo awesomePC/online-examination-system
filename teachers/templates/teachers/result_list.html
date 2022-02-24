@@ -5,7 +5,7 @@
     <h1 class="font-weight-bold">Results</h1>
     <p>({{ exam.id }}) {{ exam }}</p>
     <hr>
-    <a href="{% url 'exams_list' %}" class="btn btn-secondary px-3 mb-3">Back</a>
+    <a href="{% url 'exams_list' %}" class="btn btn-secondary px-3 mb-3"><i class="fas fa-angle-left"></i> Back</a>
 
     <div class="table-responsive">
         <table class="table table-striped table-sm">
@@ -39,7 +39,7 @@
                         <td>{{ session.exam.passing_percentage }}%</td>
                         <td>{{ session.get_passing_status|bool_to_passing_status }}</td>
                         <td>{{ session.submitted|date:"M d, Y" }}</td>
-                        <td><a href="{% url 'teachers:result_detail' session.pk %}" class="btn btn-sm btn-info">View</a></td>
+                        <td><a href="{% url 'teachers:result_detail' session.pk %}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

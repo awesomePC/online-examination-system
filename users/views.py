@@ -75,8 +75,9 @@ def student_profile(request):
 @require_POST
 @login_required
 def student_delete(request):
-    request.user.student = None
-    request.user.save()
+    student = request.user.student
+    student.user = None
+    student.save()
     messages.success(request, "Profile deleted successfully.")
     return redirect("users:student_profile")
 

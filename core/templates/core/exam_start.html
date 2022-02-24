@@ -95,12 +95,12 @@
             <div class="row">
                 <div class="col-sm-4 text-center my-1">
                     <button id="btn-all-ques" data-href="{% url 'question_list' session.exam.pk %}" class="btn btn-info" data-toggle="modal" data-target="#modal-q-list">
-                        Questions
+                        <i class="fas fa-list"></i> Questions
                     </button>
                     <form id="bookmark-form" method="POST" action="{% url 'bookmark' session.exam.pk %}" class="d-inline">
                         {% csrf_token %}
                         <input type="hidden" name="q_num">
-                        <button type="submit" class="btn btn-warning">Bookmark</button>
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-bookmark"></i> Bookmark</button>
                     </form>
                 </div>
                 <div class="col-sm-4 text-center my-1">
@@ -118,7 +118,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="q_num">
                         <button id="clear-btn" type="submit" class="btn btn-danger">
-                            Clear
+                            <i class="fas fa-eraser"></i> Clear
                         </button>
                     </form>
                     <form id="submit-form" method="POST" action="{% url 'exam_submit' session.exam.pk %}" class="d-inline confirm-form-submit" data-confirm-msg="This action can't be undone.&#10;are you sure to continue?">

@@ -40,7 +40,7 @@
                         <td>
                             <form method="POST" action="{% url 'teachers:student_delete' student.student.pk %}">
                                 {% csrf_token %}
-                                <button class="btn btn-sm btn-danger px-3 mb-1">Delete</button>
+                                <button class="btn btn-sm btn-danger px-3 mb-1"><i class="fas fa-trash-alt"></i> Delete</button>
                             </form>
                         </td>
                     </tr>

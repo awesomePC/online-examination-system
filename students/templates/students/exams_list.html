@@ -41,7 +41,7 @@
                         <td>
                             <form method="POST" action="{% url 'students:exam_start' exam.pk %}" class="confirm-form-submit" data-confirm-msg="timer will be started immediately.&#10;are you sure to continue?">
                                 {% csrf_token %}
-                                <button class="btn btn-sm btn-success px-3 mb-1">Start</button>
+                                <button class="btn btn-sm btn-success px-3 mb-1"><i class="fas fa-play"></i> Start</button>
                             </form>
                         </td>
                     </tr>
