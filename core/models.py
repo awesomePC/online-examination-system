@@ -44,6 +44,7 @@ class Exam(models.Model):
     )
     passing_percentage = models.FloatField(default=0)
     active = models.BooleanField()
+    show_result = models.BooleanField()
 
     class Meta:
         ordering = ("-created",)

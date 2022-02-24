@@ -28,6 +28,7 @@
                     <th scope="col">Max marks</th>
                     <th scope="col">Passing percentage</th>
                     <th scope="col">Is active</th>
+                    <th scope="col">Show result</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -41,6 +42,7 @@
                         <td>{{ exam.get_max_marks }}</td>
                         <td>{{ exam.passing_percentage }}%</td>
                         <td>{{ exam.active }}</td>
+                        <td>{{ exam.show_result }}</td>
                         <td>
                             <a href="{% url 'exam_detail' exam.pk %}" class="btn btn-sm btn-info px-3 mb-1">View</a>
                             <a href="{% url 'teachers:result_list' exam.pk %}" class="btn btn-sm btn-success px-3 mb-1">Result</a>

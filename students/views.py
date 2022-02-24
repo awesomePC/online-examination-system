@@ -63,10 +63,12 @@ def result_list(request):
     search = request.GET.get("search", None)
     if search:
         sessions = request.user.session_set.filter(
-            completed=True, exam__name__icontains=search
+            completed=True, exam__show_result=True, exam__name__icontains=search
         )
     else:
-        sessions = request.user.session_set.filter(completed=True)
+        sessions = request.user.session_set.filter(
+            completed=True, exam__show_result=True
+        )
 
     paginator = Paginator(sessions, 15)
     page = request.GET.get("page")
@@ -78,3 +80,31 @@ def result_list(request):
         sessions = paginator.page(paginator.num_pages)
 
     return render(request, "students/result_list.html", {"sessions": sessions})
+
+
+@login_required
+@is_verified_student
+def result_detail(request, pk):
+    session = get_object_or_404(Session, pk=pk, completed=True)
+    if session.user != request.user or not session.exam.show_result:
+        raise PermissionDenied()
+
+    search = request.GET.get("search", None)
+    if search:
+        answers = session.answer_set.filter(
+            question__question__icontains=search
+        ).order_by("question__created")
+    else:
+        answers = session.answer_set.all().order_by("question__created")
+
+    paginator = Paginator(answers, 15)
+    page = request.GET.get("page")
+    try:
+        answers = paginator.page(page)
+    except PageNotAnInteger:
+        answers = paginator.page(1)
+    except EmptyPage:
+        answers = paginator.page(paginator.num_pages)
+
+    context = {"session": session, "answers": answers}
+    return render(request, "students/result_detail.html", context)

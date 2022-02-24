@@ -33,6 +33,7 @@
                     <th scope="col">Passing percentage</th>
                     <th scope="col">Passing status</th>
                     <th scope="col">Submitted on</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody id="search-table">
@@ -51,6 +52,7 @@
                         <td>{{ session.exam.passing_percentage }}%</td>
                         <td>{{ session.get_passing_status|bool_to_passing_status }}</td>
                         <td>{{ session.submitted|date:"M d, Y" }}</td>
+                        <td><a href="{% url 'students:result_detail' session.pk %}" class="btn btn-sm btn-info">View</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

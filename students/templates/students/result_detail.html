@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% load my_extras %}
+{% block content %}
+    <h1 class="font-weight-bold">({{ session.exam.id }}) {{ session.exam }}</h1>
+    <p>{{ session.student.standard }} {{ session.student.get_branch_display }} {{ session.student.division }} {{ session.student.roll_no }} | {{ session.submitted|date:"M d, Y" }}</p>
+    <hr>
+    <a href="{% url 'students:result_list' %}" class="btn btn-secondary mb-1">Back</a>
+
+    <form>
+    <div class="input-group my-3">
+      <input class="form-control py-2" type="search" name="search" placeholder="Search...">
+      <span class="input-group-append">
+        <button class="btn btn-outline-secondary">
+            <i class="fa fa-search"></i>
+        </button>
+      </span>
+    </div>
+  </form>
+  
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Question</th>
+                    <th scope="col">Answer status</th>
+                    <th scope="col">Marks obtain</th>
+                    <th scope="col">Marks on correct answer</th>
+                    <th scope="col">Marks on wrong answer</th>
+                    <th scope="col">Student option</th>
+                    <th scope="col">Correct option</th>
+                </tr>
+            </thead>
+            <tbody id="search-table">
+                {% for answer in answers %}
+                    <tr>
+                        <td>{{ answer.question }}</td>
+                        <td>{{ answer.get_answer_status|bool_to_answer_status }}</td>
+                        <td>{{ answer.get_marks }}</td>
+                        <td>{{ answer.question.marks_on_correct_answer }}</td>
+                        <td>{{ answer.question.marks_on_wrong_answer }}</td>
+                        <td>{{ answer.answer }}) {{ answer.question|get_option_text:answer.answer }}</td>
+                        <td>{{ answer.question.correct_answer }}) {{ answer.question|get_option_text:answer.question.correct_answer }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'pagination.html' with page=answers %}
+
+    <script type="text/javascript" src="{% static 'js/keep_params.js' %}"></script>
+{% endblock content %}
